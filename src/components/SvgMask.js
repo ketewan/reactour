@@ -4,9 +4,8 @@ import * as hx from '../helpers'
 import PropTypes from 'prop-types'
 
 const SvgMaskWrapper = styled.div`
-  opacity: ${props => !props.className && 0.7};
-  color: ${props => !props.className && '#000'};
-  opacity: 0.7;
+  opacity: ${props => !props.maskClassName && 0.7};
+  color: ${props => !props.maskClassName && '#000'};
   width: 100%;
   left: 0;
   top: 0;
@@ -38,7 +37,7 @@ export default function SvgMask({
   const left = hx.safe(targetLeft - padding)
 
   return (
-    <SvgMaskWrapper className={className} onClick={onClick}>
+    <SvgMaskWrapper maskClassName={className} onClick={onClick}>
       <svg
         width={windowWidth}
         height={windowHeight}
