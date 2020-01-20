@@ -21,6 +21,10 @@ body {
   color: #2d2323;
 }
 
+.highlightedBorder {
+  stroke-width: 3;
+  stroke: #38CCD7;
+}
 .mask {
   color: #021d1d;
 }

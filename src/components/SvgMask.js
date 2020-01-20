@@ -4,6 +4,8 @@ import * as hx from '../helpers'
 import PropTypes from 'prop-types'
 
 const SvgMaskWrapper = styled.div`
+  opacity: ${props => !props.className && 0.7};
+  color: ${props => !props.className && '#000'};
   opacity: 0.7;
   width: 100%;
   left: 0;
@@ -12,7 +14,6 @@ const SvgMaskWrapper = styled.div`
   position: fixed;
   z-index: 99999;
   pointer-events: none;
-  color: #000;
 `
 
 export default function SvgMask({
@@ -28,14 +29,16 @@ export default function SvgMask({
   disableInteractionClassName,
   className,
   onClick,
-}) {
+  highlightedBorderClassName,
+  highlightedBorderRadius,
+} = props) {
   const width = hx.safe(targetWidth + padding * 2)
   const height = hx.safe(targetHeight + padding * 2)
   const top = hx.safe(targetTop - padding)
   const left = hx.safe(targetLeft - padding)
 
   return (
-    <SvgMaskWrapper onClick={onClick}>
+    <SvgMaskWrapper className={className} onClick={onClick}>
       <svg
         width={windowWidth}
         height={windowHeight}
@@ -43,6 +46,16 @@ export default function SvgMask({
         className={className}
       >
         <defs>
+          <mask id="highlighted">
+            <rect x={left} y={top} width={width} height={height} fill="white" />
+            <rect
+              x={targetLeft}
+              y={targetTop}
+              width={targetWidth}
+              height={targetHeight}
+              fill="black"
+            />
+          </mask>
           <mask id="mask-main">
             <rect
               x={0}
@@ -156,6 +169,26 @@ export default function SvgMask({
           fill="transparent"
           display={disableInteraction ? 'block' : 'none'}
           className={disableInteractionClassName}
+        />
+        {/*border*/}
+        <rect
+          x={left}
+          y={top}
+          width={width}
+          height={height}
+          pointerEvents="auto"
+          fill="none"
+          className={highlightedBorderClassName}
+          rx={highlightedBorderRadius}
+        />
+        {/*transparent padding with disabled interaction*/}
+        <rect
+          x={left}
+          y={top}
+          width={width}
+          height={height}
+          mask="url(#highlighted)"
+          fill="transparent"
         />
       </svg>
     </SvgMaskWrapper>

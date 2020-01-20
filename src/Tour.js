@@ -399,9 +399,6 @@ class Tour extends Component {
         <Portal>
           <GlobalStyle />
           <SvgMask
-            className={cn(CN.mask.base, maskClassName, {
-              [CN.mask.isOpen]: isOpen,
-            })}
             onClick={this.maskClickHandler}
             forwardRef={c => (this.mask = c)}
             windowWidth={windowWidth}
@@ -419,6 +416,7 @@ class Tour extends Component {
                 : disableInteraction
             }
             disableInteractionClassName={`${CN.mask.disableInteraction} ${highlightedMaskClassName}`}
+            highlightedBorderClassName="highlightedBorder"
           />
           <FocusLock disabled={focusUnlocked}>
             <Guide
