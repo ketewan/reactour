@@ -30,11 +30,13 @@ export default function SvgMask({
   onClick,
   highlightedBorderClassName,
   highlightedBorderRadius,
+  highlightedBorderWidth,
 } = props) {
   const width = hx.safe(targetWidth + padding * 2)
   const height = hx.safe(targetHeight + padding * 2)
   const top = hx.safe(targetTop - padding)
   const left = hx.safe(targetLeft - padding)
+
 
   return (
     <SvgMaskWrapper maskClassName={className} onClick={onClick}>
@@ -171,12 +173,13 @@ export default function SvgMask({
         />
         {/*border*/}
         <rect
-          x={left}
-          y={top}
-          width={width}
-          height={height}
+          x={left + highlightedBorderWidth / 2.0}
+          y={top + highlightedBorderWidth / 2.0}
+          width={width - highlightedBorderWidth}
+          height={height - highlightedBorderWidth}
           pointerEvents="auto"
           fill="none"
+          strokeWidth={highlightedBorderWidth}
           className={highlightedBorderClassName}
           rx={highlightedBorderRadius}
         />
