@@ -31,6 +31,7 @@ export default function SvgMask({
   highlightedBorderClassName,
   highlightedBorderRadius,
   highlightedBorderWidth,
+  roundedStep,
 } = props) {
   const width = hx.safe(targetWidth + padding * 2)
   const height = hx.safe(targetHeight + padding * 2)
@@ -181,7 +182,7 @@ export default function SvgMask({
           fill="none"
           strokeWidth={highlightedBorderWidth}
           className={highlightedBorderClassName}
-          rx={highlightedBorderRadius}
+          rx={roundedStep ? 5000 : highlightedBorderRadius}
         />
         {/*transparent padding with disabled interaction*/}
         <rect

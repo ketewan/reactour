@@ -422,6 +422,7 @@ class Tour extends Component {
             highlightedBorderClassName={highlightedBorderClassName}
             highlightedBorderRadius={highlightedBorderRadius}
             highlightedBorderWidth={highlightedBorderWidth}
+            roundedStep={steps[current].roundedStep}
           />
           <FocusLock disabled={focusUnlocked}>
             <Guide
