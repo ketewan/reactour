@@ -439,6 +439,7 @@ class Tour extends Component {
               helperHeight={helperHeight}
               helperPosition={helperPosition}
               padding={maskSpace}
+              helperPadding={50} // FIXME
               tabIndex={-1}
               current={current}
               style={steps[current].style ? steps[current].style : {}}

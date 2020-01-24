@@ -33,7 +33,8 @@ const Guide = styled.div`
       helperWidth,
       helperHeight,
       helperPosition,
-      padding,
+      padding, // this is padding from target element to highlighted area border
+      helperPadding, // this is padding from Helper to highlighted area border
     } = props
 
     const available = {
@@ -47,8 +48,8 @@ const Guide = styled.div`
       return (
         available[position] >
         (hx.isHoriz(position)
-          ? helperWidth + padding * 2
-          : helperHeight + padding * 2)
+          ? helperWidth + helperPadding * 2
+          : helperHeight + helperPadding * 2)
       )
     }
 
@@ -63,6 +64,7 @@ const Guide = styled.div`
     }
 
     const pos = helperPosition => {
+      // in case position was stated in step
       if (Array.isArray(helperPosition)) {
         const isOutX = hx.isOutsideX(helperPosition[0], windowWidth)
         const isOutY = hx.isOutsideY(helperPosition[1], windowHeight)
@@ -79,12 +81,18 @@ const Guide = styled.div`
         ]
       }
 
+      // 1) I wish to add defaultPadding which should be taken into account only once from that position
+      // (top, left, right or bottom) which was chosen
+      // 2) I wish to have ability to align helper position on asis normal to chosen position target side asis
+      // (x is normal to left and right)
+      // (y is normal to top and bottom)
+
       const hX = hx.isOutsideX(targetLeft + helperWidth, windowWidth)
         ? hx.isOutsideX(targetRight + padding, windowWidth)
           ? targetRight - helperWidth
-          : targetRight - helperWidth + padding
-        : targetLeft - padding
-      const x = hX > padding ? hX : padding
+          : targetRight - helperWidth + padding // align horizontally according to right edge of target
+        : targetLeft - padding // align horizontally according to left edge of target
+      const x = hX > padding ? hX : padding // always save padding from window edge
       const hY = hx.isOutsideY(targetTop + helperHeight, windowHeight)
         ? hx.isOutsideY(targetBottom + padding, windowHeight)
           ? targetBottom - helperHeight
@@ -92,10 +100,10 @@ const Guide = styled.div`
         : targetTop - padding
       const y = hY > padding ? hY : padding
       const coords = {
-        top: [x, targetTop - helperHeight - padding * 2],
-        right: [targetRight + padding * 2, y],
-        bottom: [x, targetBottom + padding * 2],
-        left: [targetLeft - helperWidth - padding * 2, y],
+        top: [x, targetTop - helperHeight - padding - helperPadding],
+        right: [targetRight + padding + helperPadding, y],
+        bottom: [x, targetBottom + padding + helperPadding],
+        left: [targetLeft - helperWidth - padding - helperPadding, y],
         center: [
           windowWidth / 2 - helperWidth / 2,
           windowHeight / 2 - helperHeight / 2,

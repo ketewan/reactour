@@ -61,6 +61,7 @@ function App() {
           accentColor={accentColor}
           CustomHelper={customComps ? MyCustomHelper : null}
           highlightedBorderClassName="highlightedBorder"
+          maskSpace={0}
         />
       </Suspense>
     </>
