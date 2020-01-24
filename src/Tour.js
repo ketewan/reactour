@@ -377,6 +377,7 @@ class Tour extends Component {
       highlightedBorderClassName,
       highlightedBorderRadius,
       highlightedBorderWidth,
+      helperPadding,
     } = this.props
 
     const {
@@ -439,7 +440,7 @@ class Tour extends Component {
               helperHeight={helperHeight}
               helperPosition={helperPosition}
               padding={maskSpace}
-              helperPadding={50} // FIXME
+              helperPadding={helperPadding}
               tabIndex={-1}
               current={current}
               style={steps[current].style ? steps[current].style : {}}

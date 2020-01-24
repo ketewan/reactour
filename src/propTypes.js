@@ -6,6 +6,7 @@ export const propTypes = {
   highlightedBorderClassName: PropTypes.string,
   highlightedBorderRadius: PropTypes.number,
   highlightedBorderWidth: PropTypes.number,
+  helperPadding: PropTypes.number,
   children: PropTypes.oneOfType([PropTypes.node, PropTypes.element]),
   className: PropTypes.string,
   closeWithMask: PropTypes.bool,
@@ -76,4 +77,5 @@ export const defaultProps = {
   closeWithMask: true,
   highlightedBorderRadius: 4,
   highlightedBorderWidth: 3,
+  helperPadding: 10,
 }
