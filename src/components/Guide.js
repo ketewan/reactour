@@ -87,17 +87,29 @@ const Guide = styled.div`
       // (x is normal to left and right)
       // (y is normal to top and bottom)
 
-      const hX = hx.isOutsideX(targetLeft + helperWidth, windowWidth)
-        ? hx.isOutsideX(targetRight + padding, windowWidth)
-          ? targetRight - helperWidth
-          : targetRight - helperWidth + padding // align horizontally according to right edge of target
-        : targetLeft - padding // align horizontally according to left edge of target
+      const centerY = targetTop / 2 + targetBottom / 2
+      const centerX = targetLeft / 2 + targetRight / 2
+
+      const hX =
+        centerX < 0 || hx.isOutsideX(centerX, windowWidth)
+          ? hx.isOutsideX(targetLeft + helperWidth, windowWidth)
+            ? hx.isOutsideX(targetRight + padding, windowWidth)
+              ? targetRight - helperWidth
+              : targetRight - helperWidth + padding // align horizontally according to right edge of target
+            : targetLeft - padding // align horizontally according to left edge of target
+          : centerX - helperWidth / 2
+
       const x = hX > padding ? hX : padding // always save padding from window edge
-      const hY = hx.isOutsideY(targetTop + helperHeight, windowHeight)
-        ? hx.isOutsideY(targetBottom + padding, windowHeight)
-          ? targetBottom - helperHeight
-          : targetBottom - helperHeight + padding
-        : targetTop - padding
+
+      const hY =
+        centerY < 0 || hx.isOutsideY(centerY, windowHeight)
+          ? hx.isOutsideY(targetTop + helperHeight, windowHeight)
+            ? hx.isOutsideY(targetBottom + padding, windowHeight)
+              ? targetBottom - helperHeight
+              : targetBottom - helperHeight + padding
+            : targetTop - padding
+          : centerY - helperHeight / 2
+
       const y = hY > padding ? hY : padding
       const coords = {
         top: [x, targetTop - helperHeight - padding - helperPadding],
