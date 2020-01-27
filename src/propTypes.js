@@ -48,6 +48,7 @@ export const propTypes = {
       style: PropTypes.object,
       stepInteraction: PropTypes.bool,
       navDotAriaLabel: PropTypes.string,
+      roundedStep: PropTypes.boolean,
     })
   ),
   update: PropTypes.string,

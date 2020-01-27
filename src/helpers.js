@@ -31,6 +31,18 @@ export const isOutsideX = (val, windowWidth) => val > windowWidth
 export const isOutsideY = (val, windowHeight) => val > windowHeight
 export const safe = sum => (sum < 0 ? 0 : sum)
 
+export const isAbove = (one, another) => one.bottom < another.top // b - a > eps
+export const isLeftWard = (one, another) => one.right < another.left
+
+export const isBetween = (between, a, b) => {
+  if (a > b) {
+    const tmp = a
+    a = b
+    b = tmp
+  }
+  return between >= a && between <= b
+}
+
 export function bestPositionOf(positions) {
   return Object.keys(positions)
     .map(p => ({

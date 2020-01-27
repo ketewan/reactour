@@ -37,6 +37,14 @@ class Tour extends Component {
       inDOM: false,
       observer: null,
       focusUnlocked: false,
+      helperDimensions: {
+        top: 0,
+        bottom: 0,
+        left: 0,
+        right: 0,
+        width: 0,
+        height: 0,
+      },
     }
     this.helper = createRef()
     this.helperElement = null
@@ -396,6 +404,7 @@ class Tour extends Component {
       helperHeight,
       helperPosition,
       focusUnlocked,
+      helperDimensions,
     } = this.state
 
     if (isOpen) {
@@ -594,11 +603,11 @@ const setNodeState = (node, helper, position) => {
     return {
       w,
       h,
-      helperWidth,
-      helperHeight,
+      helperWidth: helperWidth,
+      helperHeight: helperHeight,
       helperPosition: position,
       ...attrs,
-      inDOM: node ? true : false,
+      inDOM: !!node,
     }
   }
 }
