@@ -102,7 +102,7 @@ const Guide = React.forwardRef((props, ref) => {
           : targetLeft - padding
         : leftCenterX
 
-    const x = hX > helperPadding ? hX : helperPadding
+    const x = hX > padding ? hX : padding
 
     const hY =
       topCenterY < 0 ||
@@ -114,7 +114,7 @@ const Guide = React.forwardRef((props, ref) => {
           : targetTop - padding
         : topCenterY
 
-    const y = hY > helperPadding ? hY : helperPadding
+    const y = hY > padding ? hY : padding
 
     const coords = {
       top: [x, targetTop - helperHeight - padding - helperPadding],
