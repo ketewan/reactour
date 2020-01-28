@@ -40,7 +40,7 @@ const Guide = React.forwardRef((props, ref) => {
     helperHeight,
     helperPosition,
     padding, // this is padding from target element to highlighted area border
-    helperPadding, // this is padding from Helper to highlighted area border
+    helperPadding, // this is padding from helper to highlighted area border
   } = props
 
   const available = {
@@ -93,18 +93,20 @@ const Guide = React.forwardRef((props, ref) => {
     const bottomCenterY = centerY + helperHeight / 2
 
     const hX =
-      leftCenterX < 0 || hx.isOutsideX(rightCenterX, windowWidth)
+      leftCenterX < 0 ||
+      hx.isOutsideX(rightCenterX, windowWidth - helperPadding)
         ? hx.isOutsideX(targetLeft + helperWidth, windowWidth)
           ? hx.isOutsideX(targetRight + padding, windowWidth)
             ? targetRight - helperWidth
-            : targetRight - helperWidth + padding // align horizontally according to right edge of target
-          : targetLeft - padding // align horizontally according to left edge of target
+            : targetRight - helperWidth + padding
+          : targetLeft - padding
         : leftCenterX
 
-    const x = hX > padding ? hX : padding // always save padding from window edge
+    const x = hX > helperPadding ? hX : helperPadding
 
     const hY =
-      topCenterY < 0 || hx.isOutsideY(bottomCenterY, windowHeight)
+      topCenterY < 0 ||
+      hx.isOutsideY(bottomCenterY, windowHeight - helperPadding)
         ? hx.isOutsideY(targetTop + helperHeight, windowHeight)
           ? hx.isOutsideY(targetBottom + padding, windowHeight)
             ? targetBottom - helperHeight
@@ -112,7 +114,8 @@ const Guide = React.forwardRef((props, ref) => {
           : targetTop - padding
         : topCenterY
 
-    const y = hY > padding ? hY : padding
+    const y = hY > helperPadding ? hY : helperPadding
+
     const coords = {
       top: [x, targetTop - helperHeight - padding - helperPadding],
       right: [targetRight + padding + helperPadding, y],
