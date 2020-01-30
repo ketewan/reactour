@@ -174,10 +174,10 @@ export default function SvgMask({
         />
         {/*border*/}
         <rect
-          x={left + highlightedBorderWidth / 2.0}
-          y={top + highlightedBorderWidth / 2.0}
-          width={width - highlightedBorderWidth}
-          height={height - highlightedBorderWidth}
+          x={hx.safe(left + highlightedBorderWidth / 2.0)}
+          y={hx.safe(top + highlightedBorderWidth / 2.0)}
+          width={hx.safe(width - highlightedBorderWidth)}
+          height={hx.safe(height - highlightedBorderWidth)}
           pointerEvents="auto"
           fill="none"
           strokeWidth={highlightedBorderWidth}
