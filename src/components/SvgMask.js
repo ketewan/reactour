@@ -28,16 +28,13 @@ export default function SvgMask({
   disableInteractionClassName,
   className,
   onClick,
-  highlightedBorderClassName,
-  highlightedBorderRadius,
-  highlightedBorderWidth,
+  highlightedBorder,
   roundedStep,
 } = props) {
   const width = hx.safe(targetWidth + padding * 2)
   const height = hx.safe(targetHeight + padding * 2)
   const top = hx.safe(targetTop - padding)
   const left = hx.safe(targetLeft - padding)
-
 
   return (
     <SvgMaskWrapper maskClassName={className} onClick={onClick}>
@@ -174,15 +171,15 @@ export default function SvgMask({
         />
         {/*border*/}
         <rect
-          x={hx.safe(left + highlightedBorderWidth / 2.0)}
-          y={hx.safe(top + highlightedBorderWidth / 2.0)}
-          width={hx.safe(width - highlightedBorderWidth)}
-          height={hx.safe(height - highlightedBorderWidth)}
+          x={hx.safe(left + highlightedBorder.width / 2.0)}
+          y={hx.safe(top + highlightedBorder.width / 2.0)}
+          width={hx.safe(width - highlightedBorder.width)}
+          height={hx.safe(height - highlightedBorder.width)}
           pointerEvents="auto"
           fill="none"
-          strokeWidth={highlightedBorderWidth}
-          className={highlightedBorderClassName}
-          rx={roundedStep ? 5000 : highlightedBorderRadius}
+          strokeWidth={highlightedBorder.width}
+          stroke={highlightedBorder.color}
+          rx={roundedStep ? 20000 : highlightedBorder.radius}
         />
         {/*transparent padding with disabled interaction*/}
         <rect

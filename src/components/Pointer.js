@@ -16,17 +16,19 @@ const PointerWrapper = styled.div`
   z-index: 99999;
   transition: transform 0.3s;
   transform: ${props =>
-    `translate(${Math.round(props.x)}px,${Math.round(props.y)}px)
+    `translate(${props.x}px,${props.y}px)
     rotate(${props.rotationDegree}deg)`};
 `
 
-export default function Pointer({
+const Pointer = ({
   targetBottom,
   targetRight,
   targetTop,
   targetLeft,
   helperDimensions,
-} = props) {
+} = props) => {
+  if (!helperDimensions.width || !helperDimensions.height) return null
+
   const targetDimensions = {
     top: targetTop,
     bottom: targetBottom,
@@ -65,6 +67,9 @@ export default function Pointer({
     y = helperDimensions.top - POINTER_WIDTH * 2
     rotationDegree = 90
   }
+
+  x = hx.safe(x)
+  y = hx.safe(y)
 
   return (
     <PointerWrapper
@@ -108,3 +113,5 @@ PointerWrapper.propTypes = {
   y: PropTypes.number,
   rotationDegree: PropTypes.number,
 }
+
+export default Pointer

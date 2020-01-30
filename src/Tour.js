@@ -382,9 +382,7 @@ class Tour extends Component {
       rounded,
       accentColor,
       CustomHelper,
-      highlightedBorderClassName,
-      highlightedBorderRadius,
-      highlightedBorderWidth,
+      highlightedBorder,
       helperPadding,
     } = this.props
 
@@ -404,7 +402,6 @@ class Tour extends Component {
       helperHeight,
       helperPosition,
       focusUnlocked,
-      helperDimensions,
     } = this.state
 
     if (isOpen) {
@@ -429,9 +426,7 @@ class Tour extends Component {
                 : disableInteraction
             }
             disableInteractionClassName={`${CN.mask.disableInteraction} ${highlightedMaskClassName}`}
-            highlightedBorderClassName={highlightedBorderClassName}
-            highlightedBorderRadius={highlightedBorderRadius}
-            highlightedBorderWidth={highlightedBorderWidth}
+            highlightedBorder={highlightedBorder}
             roundedStep={steps[current].roundedStep}
           />
           <FocusLock disabled={focusUnlocked}>

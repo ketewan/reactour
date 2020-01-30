@@ -3,9 +3,11 @@ import PropTypes from 'prop-types'
 export const propTypes = {
   badgeContent: PropTypes.func,
   highlightedMaskClassName: PropTypes.string,
-  highlightedBorderClassName: PropTypes.string,
-  highlightedBorderRadius: PropTypes.number,
-  highlightedBorderWidth: PropTypes.number,
+  highlightedBorder: PropTypes.shape({
+    color: PropTypes.string.isRequired,
+    radius: PropTypes.number.isRequired,
+    width: PropTypes.number.isRequired,
+  }),
   helperPadding: PropTypes.number,
   children: PropTypes.oneOfType([PropTypes.node, PropTypes.element]),
   className: PropTypes.string,
@@ -76,7 +78,5 @@ export const defaultProps = {
   rounded: 0,
   accentColor: '#007aff',
   closeWithMask: true,
-  highlightedBorderRadius: 4,
-  highlightedBorderWidth: 3,
   helperPadding: 10,
 }

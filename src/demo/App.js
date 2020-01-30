@@ -60,7 +60,11 @@ function App() {
           rounded={5}
           accentColor={accentColor}
           CustomHelper={customComps ? MyCustomHelper : null}
-          highlightedBorderClassName="highlightedBorder"
+          highlightedBorder={{
+            color: '#007aff',
+            width: 3,
+            radius: 4,
+          }}
           maskSpace={0}
         />
       </Suspense>

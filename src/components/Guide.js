@@ -28,7 +28,6 @@ const GuideBody = styled.div`
 `
 
 const Guide = React.forwardRef((props, ref) => {
-  console.log(ref)
   const {
     targetTop,
     targetRight,
