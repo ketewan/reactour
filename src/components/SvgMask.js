@@ -39,7 +39,7 @@ export default function SvgMask({
 
   return (
     <SvgMaskWrapper maskClassName={className} onClick={onClick}>
-      {shouldShowStep && (
+      {shouldShowStep ? (
         <svg
           width={windowWidth}
           height={windowHeight}
@@ -197,14 +197,22 @@ export default function SvgMask({
           />
           {/*transparent padding with disabled interaction*/}
           <rect
-            x={left}
-            y={top}
-            width={width}
-            height={height}
-            mask="url(#highlighted)"
+            x={0}
+            y={0}
+            width={windowWidth}
+            height={windowHeight}
             fill="transparent"
           />
         </svg>
+      ) : (
+        <rect
+          x={left}
+          y={top}
+          width={width}
+          height={height}
+          pointerEvents="auto"
+          fill="transparent"
+        />
       )}
     </SvgMaskWrapper>
   )
