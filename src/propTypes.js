@@ -51,6 +51,7 @@ export const propTypes = {
       stepInteraction: PropTypes.bool,
       navDotAriaLabel: PropTypes.string,
       roundedStep: PropTypes.boolean,
+      shouldShowStep: PropTypes.boolean,
     })
   ),
   update: PropTypes.string,
@@ -79,4 +80,5 @@ export const defaultProps = {
   accentColor: '#007aff',
   closeWithMask: true,
   helperPadding: 10,
+  shouldShowStep: true,
 }

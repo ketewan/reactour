@@ -384,6 +384,7 @@ class Tour extends Component {
       CustomHelper,
       highlightedBorder,
       helperPadding,
+      shouldShowStep,
     } = this.props
 
     const {
@@ -409,6 +410,7 @@ class Tour extends Component {
         <Portal>
           <GlobalStyle />
           <SvgMask
+            shouldShowStep={shouldShowStep}
             onClick={this.maskClickHandler}
             forwardRef={c => (this.mask = c)}
             windowWidth={windowWidth}
