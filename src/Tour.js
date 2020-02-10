@@ -45,6 +45,7 @@ class Tour extends Component {
         width: 0,
         height: 0,
       },
+      hideStep: false,
     }
     this.helper = createRef()
     this.helperElement = null
@@ -59,7 +60,7 @@ class Tour extends Component {
   }
 
   componentWillReceiveProps(nextProps) {
-    const { isOpen, update, updateDelay } = this.props
+    const { isOpen, update, updateDelay, shouldShowStep } = this.props
 
     if (!isOpen && nextProps.isOpen) {
       this.open(nextProps.startAt)
@@ -72,6 +73,21 @@ class Tour extends Component {
         setTimeout(this.showStep, updateDelay)
       } else {
         this.props.onRequestClose()
+      }
+    }
+
+    if (isOpen && shouldShowStep !== nextProps.shouldShowStep) {
+      if (nextProps.shouldShowStep) {
+        // false -> true
+        clearTimeout(this.hideTimeout)
+        this.setState({ hideStep: false })
+        // call showStep after nextProps are set
+        setTimeout(this.showStep, 1)
+      } else {
+        // true -> false
+        this.hideTimeout = setTimeout(() => {
+          this.setState({ hideStep: true })
+        }, 500)
       }
     }
 
@@ -95,16 +111,19 @@ class Tour extends Component {
   }
 
   open(startAt) {
-    const { onAfterOpen } = this.props
+    const { onAfterOpen, shouldShowStep } = this.props
     this.setState(
       prevState => ({
         isOpen: true,
         current: startAt !== undefined ? startAt : prevState.current,
+        hideStep: !shouldShowStep,
       }),
       () => {
         setTimeout(this.showStep, 1)
         this.helperElement = this.helper.current
-        this.helper.current.focus()
+        if (this.helper.current) {
+          this.helper.current.focus()
+        }
         if (onAfterOpen) {
           onAfterOpen(this.helperElement)
         }
@@ -125,6 +144,9 @@ class Tour extends Component {
   }
 
   showStep = () => {
+    if (!this.props.shouldShowStep) {
+      return
+    }
     const { steps } = this.props
     const { current, focusUnlocked } = this.state
     if (focusUnlocked) {
@@ -403,6 +425,7 @@ class Tour extends Component {
       helperHeight,
       helperPosition,
       focusUnlocked,
+      hideStep,
     } = this.state
 
     if (isOpen) {
@@ -410,7 +433,7 @@ class Tour extends Component {
         <Portal>
           <GlobalStyle />
           <SvgMask
-            shouldShowStep={shouldShowStep}
+            inBetweenSteps={!shouldShowStep}
             onClick={this.maskClickHandler}
             forwardRef={c => (this.mask = c)}
             windowWidth={windowWidth}
@@ -433,6 +456,7 @@ class Tour extends Component {
           />
           <FocusLock disabled={focusUnlocked}>
             <Guide
+              hideStep={hideStep}
               ref={this.helper}
               targetHeight={targetHeight}
               targetWidth={targetWidth}
