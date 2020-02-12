@@ -19,6 +19,7 @@ import Portal from './Portal'
 import * as hx from './helpers'
 import { propTypes, defaultProps } from './propTypes'
 import CN from './classNames'
+import { getDocument } from './helpers'
 
 class Tour extends Component {
   constructor() {
@@ -117,7 +118,7 @@ class Tour extends Component {
   }
 
   showStep = () => {
-    if (!this.helper || !this.helper.current) return;
+    if (!this.helper || !this.helper.current) return
     const { steps } = this.props
     const { current, focusUnlocked } = this.state
     if (focusUnlocked) {
@@ -126,6 +127,9 @@ class Tour extends Component {
       })
     }
     const step = steps[current]
+
+    const { document, relativeCoords } = getDocument(step.documentRootSelector)
+
     const node = step.selector ? document.querySelector(step.selector) : null
 
     const stepCallback = o => {
@@ -185,10 +189,10 @@ class Tour extends Component {
 
     if (node) {
       const cb = () => stepCallback(node)
-      this.calculateNode(node, step.position, cb)
+      this.calculateNode(node, step.position, cb, relativeCoords)
     } else {
       this.setState(
-        setNodeState(null, this.helper.current, step.position),
+        setNodeState(null, this.helper.current, step.position, relativeCoords),
         stepCallback
       )
 
@@ -199,7 +203,7 @@ class Tour extends Component {
     }
   }
 
-  calculateNode = (node, stepPosition, cb) => {
+  calculateNode = (node, stepPosition, cb, relativeCoords) => {
     const { scrollDuration, inViewThreshold, scrollOffset } = this.props
     const attrs = hx.getNodeRect(node)
     const w = Math.max(
@@ -222,11 +226,17 @@ class Tour extends Component {
         duration: scrollDuration,
         offset,
         callback: nd => {
-          this.setState(setNodeState(nd, this.helper.current, stepPosition), cb)
+          this.setState(
+            setNodeState(nd, this.helper.current, stepPosition, relativeCoords),
+            cb
+          )
         },
       })
     } else {
-      this.setState(setNodeState(node, this.helper.current, stepPosition), cb)
+      this.setState(
+        setNodeState(node, this.helper.current, stepPosition, relativeCoords),
+        cb
+      )
     }
   }
 
@@ -561,7 +571,7 @@ class Tour extends Component {
   }
 }
 
-const setNodeState = (node, helper, position) => {
+const setNodeState = (node, helper, position, relativeCoords) => {
   const w = Math.max(
     document.documentElement.clientWidth,
     window.innerWidth || 0
@@ -573,7 +583,7 @@ const setNodeState = (node, helper, position) => {
   const { width: helperWidth, height: helperHeight } = hx.getNodeRect(helper)
 
   const attrs = node
-    ? hx.getNodeRect(node)
+    ? hx.getNodeRect(node, relativeCoords)
     : {
         top: h + 10,
         right: w / 2 + 9,
