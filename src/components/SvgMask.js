@@ -30,7 +30,7 @@ export default function SvgMask({
   onClick,
   highlightedBorder,
   roundedStep,
-  inBetweenSteps,
+  shouldShowStep,
 } = props) {
   const width = hx.safe(targetWidth + padding * 2)
   const height = hx.safe(targetHeight + padding * 2)
@@ -39,7 +39,7 @@ export default function SvgMask({
 
   return (
     <SvgMaskWrapper maskClassName={className} onClick={onClick}>
-      {!inBetweenSteps ? (
+      {shouldShowStep ? (
         <svg
           width={windowWidth}
           height={windowHeight}
@@ -236,5 +236,5 @@ SvgMask.propTypes = {
   rounded: PropTypes.number.isRequired,
   disableInteraction: PropTypes.bool.isRequired,
   disableInteractionClassName: PropTypes.string.isRequired,
-  inBetweenSteps: PropTypes.bool.isRequired,
+  shouldShowStep: PropTypes.bool,
 }

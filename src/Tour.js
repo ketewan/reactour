@@ -45,7 +45,6 @@ class Tour extends Component {
         width: 0,
         height: 0,
       },
-      hideStep: false,
     }
     this.helper = createRef()
     this.helperElement = null
@@ -79,15 +78,7 @@ class Tour extends Component {
     if (isOpen && shouldShowStep !== nextProps.shouldShowStep) {
       if (nextProps.shouldShowStep) {
         // false -> true
-        clearTimeout(this.hideTimeout)
-        this.setState({ hideStep: false })
-        // call showStep after nextProps are set
         setTimeout(this.showStep, 1)
-      } else {
-        // true -> false
-        this.hideTimeout = setTimeout(() => {
-          this.setState({ hideStep: true })
-        }, 500)
       }
     }
 
@@ -116,7 +107,6 @@ class Tour extends Component {
       prevState => ({
         isOpen: true,
         current: startAt !== undefined ? startAt : prevState.current,
-        hideStep: !shouldShowStep,
       }),
       () => {
         setTimeout(this.showStep, 1)
@@ -134,6 +124,26 @@ class Tour extends Component {
     window.addEventListener('keydown', this.keyDownHandler, false)
   }
 
+  getDocument(documentRootSelector) {
+    const root =
+      documentRootSelector &&
+      window.document.querySelector(documentRootSelector)
+
+    let document = null
+    const relativeCoords = { x: 0, y: 0 }
+
+    if (root) {
+      document = root.contentDocument || root.contentWindow.document
+      const { top, left } = hx.getNodeRect(root)
+      relativeCoords.x = left
+      relativeCoords.y = top
+    } else {
+      document = window.document
+    }
+
+    return { document, relativeCoords }
+  }
+
   unlockFocus = callback => {
     this.setState(
       {
@@ -147,6 +157,7 @@ class Tour extends Component {
     if (!this.props.shouldShowStep) {
       return
     }
+
     const { steps } = this.props
     const { current, focusUnlocked } = this.state
     if (focusUnlocked) {
@@ -155,6 +166,11 @@ class Tour extends Component {
       })
     }
     const step = steps[current]
+
+    const { document, relativeCoords } = this.getDocument(
+      step.documentRootSelector
+    )
+
     const node = step.selector ? document.querySelector(step.selector) : null
 
     const stepCallback = o => {
@@ -165,7 +181,11 @@ class Tour extends Component {
 
     if (step.observe) {
       const target = document.querySelector(step.observe)
-      const config = { attributes: true, childList: true, characterData: true }
+      const config = {
+        attributes: true,
+        childList: true,
+        characterData: true,
+      }
       this.setState(
         prevState => {
           if (prevState.observer) {
@@ -214,10 +234,10 @@ class Tour extends Component {
 
     if (node) {
       const cb = () => stepCallback(node)
-      this.calculateNode(node, step.position, cb)
+      this.calculateNode(node, step.position, cb, relativeCoords)
     } else {
       this.setState(
-        setNodeState(null, this.helper.current, step.position),
+        setNodeState(null, this.helper.current, step.position, relativeCoords),
         stepCallback
       )
 
@@ -228,7 +248,7 @@ class Tour extends Component {
     }
   }
 
-  calculateNode = (node, stepPosition, cb) => {
+  calculateNode = (node, stepPosition, cb, relativeCoords) => {
     const { scrollDuration, inViewThreshold, scrollOffset } = this.props
     const attrs = hx.getNodeRect(node)
     const w = Math.max(
@@ -251,11 +271,17 @@ class Tour extends Component {
         duration: scrollDuration,
         offset,
         callback: nd => {
-          this.setState(setNodeState(nd, this.helper.current, stepPosition), cb)
+          this.setState(
+            setNodeState(nd, this.helper.current, stepPosition, relativeCoords),
+            cb
+          )
         },
       })
     } else {
-      this.setState(setNodeState(node, this.helper.current, stepPosition), cb)
+      this.setState(
+        setNodeState(node, this.helper.current, stepPosition, relativeCoords),
+        cb
+      )
     }
   }
 
@@ -425,7 +451,6 @@ class Tour extends Component {
       helperHeight,
       helperPosition,
       focusUnlocked,
-      hideStep,
     } = this.state
 
     if (isOpen) {
@@ -433,7 +458,7 @@ class Tour extends Component {
         <Portal>
           <GlobalStyle />
           <SvgMask
-            inBetweenSteps={!shouldShowStep}
+            shouldShowStep={shouldShowStep}
             onClick={this.maskClickHandler}
             forwardRef={c => (this.mask = c)}
             windowWidth={windowWidth}
@@ -456,7 +481,7 @@ class Tour extends Component {
           />
           <FocusLock disabled={focusUnlocked}>
             <Guide
-              hideStep={hideStep}
+              shouldShowStep={shouldShowStep}
               ref={this.helper}
               targetHeight={targetHeight}
               targetWidth={targetWidth}
@@ -596,7 +621,7 @@ class Tour extends Component {
   }
 }
 
-const setNodeState = (node, helper, position) => {
+const setNodeState = (node, helper, position, relativeCoords) => {
   const w = Math.max(
     document.documentElement.clientWidth,
     window.innerWidth || 0
@@ -608,7 +633,7 @@ const setNodeState = (node, helper, position) => {
   const { width: helperWidth, height: helperHeight } = hx.getNodeRect(helper)
 
   const attrs = node
-    ? hx.getNodeRect(node)
+    ? hx.getNodeRect(node, relativeCoords)
     : {
         top: h + 10,
         right: w / 2 + 9,
@@ -620,6 +645,7 @@ const setNodeState = (node, helper, position) => {
         h,
         helperPosition: 'center',
       }
+
   return function update() {
     return {
       w,

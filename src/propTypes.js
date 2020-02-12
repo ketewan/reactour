@@ -51,7 +51,7 @@ export const propTypes = {
       stepInteraction: PropTypes.bool,
       navDotAriaLabel: PropTypes.string,
       roundedStep: PropTypes.boolean,
-      inBetweenSteps: PropTypes.boolean,
+      documentRootSelector: PropTypes.string,
     })
   ),
   update: PropTypes.string,

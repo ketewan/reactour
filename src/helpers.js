@@ -1,4 +1,7 @@
-export function getNodeRect(node) {
+export function getNodeRect(node, relativeCoords) {
+  const dx = relativeCoords ? relativeCoords.x : 0
+  const dy = relativeCoords ? relativeCoords.y : 0
+
   const {
     top,
     right,
@@ -7,7 +10,14 @@ export function getNodeRect(node) {
     width,
     height,
   } = node.getBoundingClientRect()
-  return { top, right, bottom, left, width, height }
+  return {
+    top: top + dy,
+    right: right + dx,
+    bottom: bottom + dy,
+    left: left + dx,
+    width,
+    height,
+  }
 }
 
 export function inView({ top, right, bottom, left, w, h, threshold = 0 }) {

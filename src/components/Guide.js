@@ -40,7 +40,7 @@ const Guide = React.forwardRef((props, ref) => {
     helperPosition,
     padding, // this is padding from target element to highlighted area border
     helperPadding, // this is padding from helper to highlighted area border
-    hideStep,
+    shouldShowStep,
   } = props
 
   const available = {
@@ -147,7 +147,7 @@ const Guide = React.forwardRef((props, ref) => {
   }
 
   return (
-    !hideStep && (
+    shouldShowStep && (
       <>
         <GuideBody {...props} left={left} top={top} ref={ref} />
         {!helperPosition && (
