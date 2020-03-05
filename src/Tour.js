@@ -45,6 +45,7 @@ class Tour extends Component {
         width: 0,
         height: 0,
       },
+      shouldShowSvgMask: true,
     }
     this.helper = createRef()
     this.helperElement = null
@@ -78,7 +79,9 @@ class Tour extends Component {
     if (isOpen && shouldShowStep !== nextProps.shouldShowStep) {
       if (nextProps.shouldShowStep) {
         // false -> true
-        setTimeout(this.showStep, 1)
+        setTimeout(this.showStep, 0)
+      } else {
+        this.setState({ shouldShowSvgMask: false })
       }
     }
 
@@ -102,7 +105,7 @@ class Tour extends Component {
   }
 
   open(startAt) {
-    const { onAfterOpen, shouldShowStep } = this.props
+    const { onAfterOpen } = this.props
     this.setState(
       prevState => ({
         isOpen: true,
@@ -246,6 +249,7 @@ class Tour extends Component {
           `Doesn't find a DOM node '${step.selector}'. Please check the 'steps' Tour prop Array at position ${current}.`
         )
     }
+    setTimeout(this.setState({ shouldShowSvgMask: true }), 0)
   }
 
   calculateNode = (node, stepPosition, cb, relativeCoords) => {
@@ -458,7 +462,7 @@ class Tour extends Component {
         <Portal>
           <GlobalStyle />
           <SvgMask
-            shouldShowStep={shouldShowStep}
+            shouldShowStep={this.state.shouldShowSvgMask}
             onClick={this.maskClickHandler}
             forwardRef={c => (this.mask = c)}
             windowWidth={windowWidth}
@@ -482,6 +486,7 @@ class Tour extends Component {
           <FocusLock disabled={focusUnlocked}>
             <Guide
               shouldShowStep={shouldShowStep}
+              shouldShowSvgMask={this.state.shouldShowSvgMask}
               ref={this.helper}
               targetHeight={targetHeight}
               targetWidth={targetWidth}
@@ -630,7 +635,10 @@ const setNodeState = (node, helper, position, relativeCoords) => {
     document.documentElement.clientHeight,
     window.innerHeight || 0
   )
-  const { width: helperWidth, height: helperHeight } = hx.getNodeRect(helper)
+
+  const { width: helperWidth, height: helperHeight } = helper
+    ? hx.getNodeRect(helper)
+    : { width: 0, height: 0 }
 
   const attrs = node
     ? hx.getNodeRect(node, relativeCoords)

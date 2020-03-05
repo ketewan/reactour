@@ -23,7 +23,6 @@ const GuideBody = styled.div`
   top: 0;
   left: 0;
   z-index: 1000000;
-
   transform: ${props => `translate(${props.left}px, ${props.top}px)`};
 `
 
@@ -41,6 +40,7 @@ const Guide = React.forwardRef((props, ref) => {
     padding, // this is padding from target element to highlighted area border
     helperPadding, // this is padding from helper to highlighted area border
     shouldShowStep,
+    shouldShowSvgMask,
   } = props
 
   const available = {
@@ -150,7 +150,7 @@ const Guide = React.forwardRef((props, ref) => {
     shouldShowStep && (
       <>
         <GuideBody {...props} left={left} top={top} ref={ref} />
-        {!helperPosition && (
+        {!helperPosition && shouldShowSvgMask && (
           <Pointer
             helperDimensions={helperDimensions}
             targetTop={targetTop}
