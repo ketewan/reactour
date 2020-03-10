@@ -37,11 +37,17 @@ const Guide = React.forwardRef((props, ref) => {
     helperWidth,
     helperHeight,
     helperPosition,
-    padding, // this is padding from target element to highlighted area border
-    helperPadding, // this is padding from helper to highlighted area border
+    maskSpace,
+    padding,
+    helperPadding,
     shouldShowStep,
     shouldShowSvgMask,
   } = props
+
+  const paddingTop = padding ? padding[0] : maskSpace
+  const paddingRight = padding ? padding[1] : maskSpace
+  const paddingBottom = padding ? padding[2] : maskSpace
+  const paddingLeft = padding ? padding[3] : maskSpace
 
   const available = {
     left: targetLeft,
@@ -95,32 +101,35 @@ const Guide = React.forwardRef((props, ref) => {
     const hX =
       leftCenterX < 0 ||
       hx.isOutsideX(rightCenterX, windowWidth - helperPadding)
-        ? hx.isOutsideX(targetLeft + helperWidth, windowWidth)
-          ? hx.isOutsideX(targetRight + padding, windowWidth)
+        ? hx.isOutsideX(targetLeft - paddingLeft + helperWidth, windowWidth)
+          ? hx.isOutsideX(targetRight + paddingRight, windowWidth)
             ? targetRight - helperWidth
-            : targetRight - helperWidth + padding
-          : targetLeft - padding
+            : targetRight + paddingRight - helperWidth
+          : targetLeft - paddingLeft
         : leftCenterX
 
-    const x = hX > padding ? hX : padding
+    const x = hX > paddingLeft ? hX : paddingLeft
 
     const hY =
       topCenterY < 0 ||
       hx.isOutsideY(bottomCenterY, windowHeight - helperPadding)
-        ? hx.isOutsideY(targetTop + helperHeight, windowHeight)
-          ? hx.isOutsideY(targetBottom + padding, windowHeight)
+        ? hx.isOutsideY(targetTop - paddingTop + helperHeight, windowHeight)
+          ? hx.isOutsideY(targetBottom + paddingBottom, windowHeight)
             ? targetBottom - helperHeight
-            : targetBottom - helperHeight + padding
-          : targetTop - padding
+            : targetBottom + paddingBottom - helperHeight
+          : targetTop - paddingTop
         : topCenterY
 
-    const y = hY > padding ? hY : padding
+    const y = hY > paddingTop ? hY : paddingTop
 
     const coords = {
-      top: [x, targetTop - helperHeight - padding - helperPadding],
-      right: [targetRight + padding + helperPadding, y],
-      bottom: [x, targetBottom + padding + helperPadding],
-      left: [targetLeft - helperWidth - padding - helperPadding, y],
+      top: [x, hx.safe(targetTop - helperHeight - paddingTop - helperPadding)],
+      right: [targetRight + paddingRight + helperPadding, y],
+      bottom: [x, targetBottom + paddingBottom + helperPadding],
+      left: [
+        hx.safe(targetLeft - helperWidth - paddingLeft - helperPadding),
+        y,
+      ],
       center: [
         windowWidth / 2 - helperWidth / 2,
         windowHeight / 2 - helperHeight / 2,

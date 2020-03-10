@@ -22,6 +22,7 @@ export default function SvgMask({
   targetHeight,
   targetTop,
   targetLeft,
+  maskSpace,
   padding,
   rounded,
   disableInteraction,
@@ -32,10 +33,17 @@ export default function SvgMask({
   roundedStep,
   shouldShowStep,
 } = props) {
-  const width = hx.safe(targetWidth + padding * 2)
-  const height = hx.safe(targetHeight + padding * 2)
-  const top = hx.safe(targetTop - padding)
-  const left = hx.safe(targetLeft - padding)
+  console.log('in svg mask ', shouldShowStep)
+
+  const paddingTop = padding ? padding[0] : maskSpace
+  const paddingRight = padding ? padding[1] : maskSpace
+  const paddingBottom = padding ? padding[2] : maskSpace
+  const paddingLeft = padding ? padding[3] : maskSpace
+
+  const width = hx.safe(targetWidth + paddingLeft + paddingRight)
+  const height = hx.safe(targetHeight + paddingTop + paddingBottom)
+  const top = hx.safe(targetTop - paddingTop)
+  const left = hx.safe(targetLeft - paddingLeft)
 
   return (
     <SvgMaskWrapper maskClassName={className} onClick={onClick}>
@@ -142,7 +150,7 @@ export default function SvgMask({
               <rect x={0} y={top} width={left} height={height} />
               {/* right */}
               <rect
-                x={targetLeft + targetWidth + padding}
+                x={targetLeft + targetWidth + paddingRight}
                 y={top}
                 width={hx.safe(windowWidth - targetWidth - left)}
                 height={height}
@@ -150,7 +158,7 @@ export default function SvgMask({
               {/* bottom */}
               <rect
                 x={0}
-                y={targetTop + targetHeight + padding}
+                y={targetTop + targetHeight + paddingBottom}
                 width={windowWidth}
                 height={hx.safe(windowHeight - targetHeight - top)}
               />
@@ -232,7 +240,8 @@ SvgMask.propTypes = {
   targetHeight: PropTypes.number.isRequired,
   targetTop: PropTypes.number.isRequired,
   targetLeft: PropTypes.number.isRequired,
-  padding: PropTypes.number.isRequired,
+  maskSpace: PropTypes.number.isRequired,
+  padding: PropTypes.arrayOf(PropTypes.number),
   rounded: PropTypes.number.isRequired,
   disableInteraction: PropTypes.bool.isRequired,
   disableInteractionClassName: PropTypes.string.isRequired,

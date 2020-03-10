@@ -134,6 +134,7 @@ const tourConfig = [
     selector: '[data-tut="reactour__iso"]',
     content:
       "Ok, let's start with the name of the Tour that is about to begin.",
+    padding: [30, 100, 10, 20],
   },
   {
     selector: '[data-tut="reactour__logo"]',

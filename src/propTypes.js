@@ -52,6 +52,7 @@ export const propTypes = {
       navDotAriaLabel: PropTypes.string,
       roundedStep: PropTypes.boolean,
       documentRootSelector: PropTypes.string,
+      pading: PropTypes.arrayOf(PropTypes.number),
     })
   ),
   update: PropTypes.string,
@@ -64,6 +65,7 @@ export const propTypes = {
   ]),
   rounded: PropTypes.number,
   accentColor: PropTypes.string,
+  shouldShowStep: PropTypes.bool,
 }
 
 export const defaultProps = {
