@@ -163,6 +163,26 @@ export default function SvgMask({
                 height={hx.safe(windowHeight - targetHeight - top)}
               />
             </clipPath>
+            <clipPath id="clip-path-without-padding">
+              {/* top */}
+              <rect x={0} y={0} width={windowWidth} height={targetTop} />
+              {/* left */}
+              <rect x={0} y={top} width={targetLeft} height={height} />
+              {/* right */}
+              <rect
+                x={targetLeft + targetWidth}
+                y={targetTop}
+                width={hx.safe(windowWidth - targetWidth - targetLeft)}
+                height={height}
+              />
+              {/* bottom */}
+              <rect
+                x={0}
+                y={targetTop + targetHeight}
+                width={windowWidth}
+                height={hx.safe(windowHeight - targetHeight - targetTop)}
+              />
+            </clipPath>
           </defs>
           <rect
             x={0}
@@ -210,6 +230,8 @@ export default function SvgMask({
             width={windowWidth}
             height={windowHeight}
             fill="transparent"
+            pointerEvents="auto"
+            clipPath="url(#clip-path-without-padding)"
           />
         </svg>
       ) : (
