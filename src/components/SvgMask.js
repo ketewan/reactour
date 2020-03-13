@@ -33,8 +33,6 @@ export default function SvgMask({
   roundedStep,
   shouldShowStep,
 } = props) {
-  console.log('in svg mask ', shouldShowStep)
-
   const paddingTop = padding ? padding[0] : maskSpace
   const paddingRight = padding ? padding[1] : maskSpace
   const paddingBottom = padding ? padding[2] : maskSpace
