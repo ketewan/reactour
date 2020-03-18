@@ -44,6 +44,7 @@ export const propTypes = {
       style: PropTypes.object,
       stepInteraction: PropTypes.bool,
       navDotAriaLabel: PropTypes.string,
+      documentRootSelector: PropTypes.string,
     })
   ),
   update: PropTypes.string,
