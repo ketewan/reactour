@@ -1,23 +1,32 @@
 import React from 'react'
-import styled from 'styled-components'
+import styled, { keyframes } from 'styled-components'
 import * as hx from '../helpers'
 import PropTypes from 'prop-types'
 
 const POINTER_WIDTH = 10,
   POINTER_HEIGHT = 20
 
+const fadeIn = keyframes`
+  0% {
+    opacity: 0;
+  }
+  100% {
+    opacity: 1;
+  }
+`
+
 const PointerWrapper = styled.div`
-  left: 0;
-  top: 0;
+  opacity: 0;
+  left: ${props => `${props.x}px`};
+  top: ${props => `${props.y}px`};
   color: #272181;
   height: ${POINTER_HEIGHT}px;
   width: ${POINTER_WIDTH * 2}px;
   position: fixed;
   z-index: 99999;
-  transition: transform 0.3s;
-  transform: ${props =>
-    `translate(${props.x}px,${props.y}px)
-    rotate(${props.rotationDegree}deg)`};
+  animation: 0.01s ${fadeIn} ease-out forwards;
+  animation-delay: 0.3s;
+  transform: ${props => `rotate(${props.rotationDegree}deg)`};
 `
 
 const Pointer = ({
