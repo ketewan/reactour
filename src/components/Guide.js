@@ -1,6 +1,6 @@
 import styled from 'styled-components'
 import * as hx from '../helpers'
-import Pointer from './Pointer'
+import { pointer } from './Pointer'
 import React from 'react'
 
 const GuideBody = styled.div`
@@ -24,6 +24,7 @@ const GuideBody = styled.div`
   left: 0;
   z-index: 1000000;
   transform: ${props => `translate(${props.left}px, ${props.top}px)`};
+  ${props => !props.helperPosition && props.arrow};
 `
 
 const Guide = React.forwardRef((props, ref) => {
@@ -41,7 +42,6 @@ const Guide = React.forwardRef((props, ref) => {
     padding,
     helperPadding,
     shouldShowStep,
-    shouldShowSvgMask,
   } = props
 
   const paddingTop = padding ? padding[0] : maskSpace
@@ -158,16 +158,19 @@ const Guide = React.forwardRef((props, ref) => {
   return (
     shouldShowStep && (
       <>
-        <GuideBody {...props} left={left} top={top} ref={ref} />
-        {!helperPosition && shouldShowSvgMask && (
-          <Pointer
-            helperDimensions={helperDimensions}
-            targetTop={targetTop}
-            targetBottom={targetBottom}
-            targetRight={targetRight}
-            targetLeft={targetLeft}
-          />
-        )}
+        <GuideBody
+          {...props}
+          arrow={pointer({
+            targetBottom,
+            targetRight,
+            targetTop,
+            targetLeft,
+            helperDimensions,
+          })}
+          left={left}
+          top={top}
+          ref={ref}
+        />
       </>
     )
   )
