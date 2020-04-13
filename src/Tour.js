@@ -32,8 +32,8 @@ class Tour extends Component {
       left: 0,
       width: 0,
       height: 0,
-      w: 0,
-      h: 0,
+      w: window.innerWidth,
+      h: window.innerHeight,
       inDOM: false,
       observer: null,
       focusUnlocked: false,
@@ -45,7 +45,7 @@ class Tour extends Component {
         width: 0,
         height: 0,
       },
-      shouldShowSvgMask: true,
+      shouldShowSvgMask: false,
     }
     this.helper = createRef()
     this.helperElement = null
