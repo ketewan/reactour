@@ -45,210 +45,189 @@ export default function SvgMask({
 
   return (
     <SvgMaskWrapper maskClassName={className} onClick={onClick}>
-      {shouldShowStep ? (
-        <svg
+      <svg
+        width={windowWidth}
+        height={windowHeight}
+        xmlns="http://www.w3.org/2000/svg"
+        className={className}
+      >
+        <defs>
+          <mask id="highlighted">
+            <rect x={left} y={top} width={width} height={height} fill="white" />
+            <rect
+              x={targetLeft}
+              y={targetTop}
+              width={targetWidth}
+              height={targetHeight}
+              fill="black"
+            />
+          </mask>
+          <mask id="mask-main">
+            <rect
+              x={0}
+              y={0}
+              width={windowWidth}
+              height={windowHeight}
+              fill="white"
+            />
+            <rect x={left} y={top} width={width} height={height} fill="black" />
+            {/* top left rounded corner */}
+            <rect
+              x={left - 1}
+              y={top - 1}
+              width={rounded}
+              height={rounded}
+              fill="white"
+            />
+            <circle
+              cx={left + rounded}
+              cy={top + rounded}
+              r={rounded}
+              fill="black"
+            />
+            {/* top right rounded corner */}
+            <rect
+              x={left + width - rounded + 1}
+              y={top - 1}
+              width={rounded}
+              height={rounded}
+              fill="white"
+            />
+            <circle
+              cx={left + width - rounded}
+              cy={top + rounded}
+              r={rounded}
+              fill="black"
+            />
+            {/* bottom left rounded corner */}
+            <rect
+              x={left - 1}
+              y={top + height - rounded + 1}
+              width={rounded}
+              height={rounded}
+              fill="white"
+            />
+            <circle
+              cx={left + rounded}
+              cy={top + height - rounded}
+              r={rounded}
+              fill="black"
+            />
+            {/* bottom right rounded corner */}
+            <rect
+              x={left + width - rounded + 1}
+              y={top + height - rounded + 1}
+              width={rounded}
+              height={rounded}
+              fill="white"
+            />
+            <circle
+              cx={left + width - rounded}
+              cy={top + height - rounded}
+              r={rounded}
+              fill="black "
+            />
+          </mask>
+          <clipPath id="clip-path">
+            {/* top */}
+            <rect x={0} y={0} width={windowWidth} height={top} />
+            {/* left */}
+            <rect x={0} y={top} width={left} height={height} />
+            {/* right */}
+            <rect
+              x={targetLeft + targetWidth + paddingRight}
+              y={top}
+              width={hx.safe(windowWidth - targetWidth - left)}
+              height={height}
+            />
+            {/* bottom */}
+            <rect
+              x={0}
+              y={targetTop + targetHeight + paddingBottom}
+              width={windowWidth}
+              height={hx.safe(windowHeight - targetHeight - top)}
+            />
+          </clipPath>
+          <clipPath id="clip-path-without-padding">
+            {/* top */}
+            <rect x={0} y={0} width={windowWidth} height={targetTop} />
+            {/* left */}
+            <rect x={0} y={top} width={targetLeft} height={height} />
+            {/* right */}
+            <rect
+              x={targetLeft + targetWidth}
+              y={targetTop}
+              width={hx.safe(windowWidth - targetWidth - targetLeft)}
+              height={height}
+            />
+            {/* bottom */}
+            <rect
+              x={0}
+              y={targetTop + targetHeight}
+              width={windowWidth}
+              height={hx.safe(windowHeight - targetHeight - targetTop)}
+            />
+          </clipPath>
+        </defs>
+        <rect
+          x={0}
+          y={0}
           width={windowWidth}
           height={windowHeight}
-          xmlns="http://www.w3.org/2000/svg"
-          className={className}
-        >
-          <defs>
-            <mask id="highlighted">
-              <rect
-                x={left}
-                y={top}
-                width={width}
-                height={height}
-                fill="white"
-              />
-              <rect
-                x={targetLeft}
-                y={targetTop}
-                width={targetWidth}
-                height={targetHeight}
-                fill="black"
-              />
-            </mask>
-            <mask id="mask-main">
-              <rect
-                x={0}
-                y={0}
-                width={windowWidth}
-                height={windowHeight}
-                fill="white"
-              />
-              <rect
-                x={left}
-                y={top}
-                width={width}
-                height={height}
-                fill="black"
-              />
-              {/* top left rounded corner */}
-              <rect
-                x={left - 1}
-                y={top - 1}
-                width={rounded}
-                height={rounded}
-                fill="white"
-              />
-              <circle
-                cx={left + rounded}
-                cy={top + rounded}
-                r={rounded}
-                fill="black"
-              />
-              {/* top right rounded corner */}
-              <rect
-                x={left + width - rounded + 1}
-                y={top - 1}
-                width={rounded}
-                height={rounded}
-                fill="white"
-              />
-              <circle
-                cx={left + width - rounded}
-                cy={top + rounded}
-                r={rounded}
-                fill="black"
-              />
-              {/* bottom left rounded corner */}
-              <rect
-                x={left - 1}
-                y={top + height - rounded + 1}
-                width={rounded}
-                height={rounded}
-                fill="white"
-              />
-              <circle
-                cx={left + rounded}
-                cy={top + height - rounded}
-                r={rounded}
-                fill="black"
-              />
-              {/* bottom right rounded corner */}
-              <rect
-                x={left + width - rounded + 1}
-                y={top + height - rounded + 1}
-                width={rounded}
-                height={rounded}
-                fill="white"
-              />
-              <circle
-                cx={left + width - rounded}
-                cy={top + height - rounded}
-                r={rounded}
-                fill="black "
-              />
-            </mask>
-            <clipPath id="clip-path">
-              {/* top */}
-              <rect x={0} y={0} width={windowWidth} height={top} />
-              {/* left */}
-              <rect x={0} y={top} width={left} height={height} />
-              {/* right */}
-              <rect
-                x={targetLeft + targetWidth + paddingRight}
-                y={top}
-                width={hx.safe(windowWidth - targetWidth - left)}
-                height={height}
-              />
-              {/* bottom */}
-              <rect
-                x={0}
-                y={targetTop + targetHeight + paddingBottom}
-                width={windowWidth}
-                height={hx.safe(windowHeight - targetHeight - top)}
-              />
-            </clipPath>
-            <clipPath id="clip-path-without-padding">
-              {/* top */}
-              <rect x={0} y={0} width={windowWidth} height={targetTop} />
-              {/* left */}
-              <rect x={0} y={top} width={targetLeft} height={height} />
-              {/* right */}
-              <rect
-                x={targetLeft + targetWidth}
-                y={targetTop}
-                width={hx.safe(windowWidth - targetWidth - targetLeft)}
-                height={height}
-              />
-              {/* bottom */}
-              <rect
-                x={0}
-                y={targetTop + targetHeight}
-                width={windowWidth}
-                height={hx.safe(windowHeight - targetHeight - targetTop)}
-              />
-            </clipPath>
-          </defs>
-          <rect
-            x={0}
-            y={0}
-            width={windowWidth}
-            height={windowHeight}
-            fill="currentColor"
-            mask="url(#mask-main)"
-          />
-          <rect
-            x={0}
-            y={0}
-            width={windowWidth}
-            height={windowHeight}
-            fill="currentColor"
-            clipPath="url(#clip-path)"
-            pointerEvents="auto"
-          />
-          <rect
-            x={left}
-            y={top}
-            width={width}
-            height={height}
-            pointerEvents="auto"
-            fill="transparent"
-            display={disableInteraction ? 'block' : 'none'}
-            className={disableInteractionClassName}
-          />
-          {/*border*/}
-          <rect
-            x={hx.safe(left + highlightedBorder.width / 2.0)}
-            y={hx.safe(top + highlightedBorder.width / 2.0)}
-            width={hx.safe(width - highlightedBorder.width)}
-            height={hx.safe(height - highlightedBorder.width)}
-            pointerEvents="auto"
-            fill="none"
-            strokeWidth={highlightedBorder.width}
-            stroke={highlightedBorder.color}
-            rx={roundedStep ? 20000 : highlightedBorder.radius}
-          />
-          {/*transparent padding with disabled interaction*/}
-          <rect
-            x={0}
-            y={0}
-            width={windowWidth}
-            height={windowHeight}
-            fill="transparent"
-            pointerEvents="auto"
-            clipPath="url(#clip-path-without-padding)"
-          />
-        </svg>
-      ) : (
-        <svg
+          fill="currentColor"
+          mask="url(#mask-main)"
+        />
+        <rect
+          x={0}
+          y={0}
           width={windowWidth}
           height={windowHeight}
-          xmlns="http://www.w3.org/2000/svg"
-          className={className}
-        >
-          <rect
-            x={0}
-            y={0}
-            width={windowWidth}
-            height={windowHeight}
-            pointerEvents="auto"
-            fill="transparent"
-          />
-        </svg>
-      )}
+          fill="currentColor"
+          clipPath="url(#clip-path)"
+          pointerEvents="auto"
+        />
+        <rect
+          x={left}
+          y={top}
+          width={width}
+          height={height}
+          pointerEvents="auto"
+          fill="transparent"
+          display={disableInteraction ? 'block' : 'none'}
+          className={disableInteractionClassName}
+        />
+        {/*border*/}
+        <rect
+          x={hx.safe(left + highlightedBorder.width / 2.0)}
+          y={hx.safe(top + highlightedBorder.width / 2.0)}
+          width={hx.safe(width - highlightedBorder.width)}
+          height={hx.safe(height - highlightedBorder.width)}
+          pointerEvents="auto"
+          fill="none"
+          strokeWidth={highlightedBorder.width}
+          stroke={highlightedBorder.color}
+          rx={roundedStep ? 20000 : highlightedBorder.radius}
+        />
+        {/*transparent padding with disabled interaction*/}
+        <rect
+          x={0}
+          y={0}
+          width={windowWidth}
+          height={windowHeight}
+          fill="transparent"
+          pointerEvents="auto"
+          clipPath="url(#clip-path-without-padding)"
+        />
+        <rect
+          x={0}
+          y={0}
+          width={windowWidth}
+          height={windowHeight}
+          pointerEvents="auto"
+          fill="transparent"
+          display={shouldShowStep ? 'none' : 'block'}
+        />
+      </svg>
     </SvgMaskWrapper>
   )
 }
