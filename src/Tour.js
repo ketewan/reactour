@@ -368,6 +368,7 @@ class Tour extends Component {
       showNumber,
       onRequestClose,
       maskSpace,
+      helperSpace,
       lastStepNextButton,
       nextButton,
       prevButton,
@@ -423,7 +424,8 @@ class Tour extends Component {
             targetHeight={targetHeight}
             targetTop={targetTop}
             targetLeft={targetLeft}
-            padding={maskSpace}
+            maskPadding={maskSpace}
+            stepPadding={steps[current].padding}
             rounded={rounded}
             roundedStep={steps[current].roundedStep}
             className={maskClassName}
@@ -449,7 +451,9 @@ class Tour extends Component {
               helperWidth={helperWidth}
               helperHeight={helperHeight}
               helperPosition={helperPosition}
-              padding={maskSpace}
+              maskPadding={maskSpace}
+              helperPadding={helperSpace}
+              stepPadding={steps[current].padding}
               tabIndex={-1}
               current={current}
               style={steps[current].style ? steps[current].style : {}}
