@@ -14,6 +14,8 @@ import {
   Navigation,
   Dot,
   SvgMask,
+  ResizeObserver as ReactourResizeObserver,
+  MutationObserver as ReactourMutationObserver,
 } from './components/index'
 import Portal from './Portal'
 import * as hx from './helpers'
@@ -59,7 +61,7 @@ class Tour extends Component {
     }
   }
 
-  componentWillReceiveProps(nextProps) {
+  UNSAFE_componentWillReceiveProps(nextProps) {
     const { isOpen, update, updateDelay, shouldShowStep } = this.props
 
     if (!isOpen && nextProps.isOpen) {
@@ -114,9 +116,7 @@ class Tour extends Component {
       () => {
         setTimeout(this.showStep, 1)
         this.helperElement = this.helper.current
-        if (this.helper.current) {
-          this.helper.current.focus()
-        }
+        if (!this.props.disableFocusLock) this.helper.current.focus()
         if (onAfterOpen) {
           onAfterOpen(this.helperElement)
         }
@@ -157,6 +157,7 @@ class Tour extends Component {
   }
 
   showStep = () => {
+    if (!this.helper || !this.helper.current) return
     if (!this.props.shouldShowStep) {
       return
     }
@@ -184,11 +185,7 @@ class Tour extends Component {
 
     if (step.observe) {
       const target = document.querySelector(step.observe)
-      const config = {
-        attributes: true,
-        childList: true,
-        characterData: true,
-      }
+      const config = { attributes: true, childList: true, characterData: true }
       this.setState(
         prevState => {
           if (prevState.observer) {
@@ -205,12 +202,7 @@ class Tour extends Component {
                 ) {
                   const cb = () => stepCallback(mutation.addedNodes[0])
                   setTimeout(
-                    () =>
-                      this.calculateNode(
-                        mutation.addedNodes[0],
-                        step.position,
-                        cb
-                      ),
+                    () => this.calculateNode(mutation.addedNodes[0], step, cb),
                     100
                   )
                 } else if (
@@ -218,7 +210,7 @@ class Tour extends Component {
                   mutation.removedNodes.length > 0
                 ) {
                   const cb = () => stepCallback(node)
-                  this.calculateNode(node, step.position, cb)
+                  this.calculateNode(node, step, cb)
                 }
               })
             }),
@@ -237,12 +229,9 @@ class Tour extends Component {
 
     if (node) {
       const cb = () => stepCallback(node)
-      this.calculateNode(node, step.position, cb, relativeCoords)
+      this.calculateNode(node, step, cb)
     } else {
-      this.setState(
-        setNodeState(null, this.helper.current, step.position, relativeCoords),
-        stepCallback
-      )
+      this.setState(setNodeState(null, step, this.helper.current), stepCallback)
 
       step.selector &&
         console.warn(
@@ -252,9 +241,9 @@ class Tour extends Component {
     setTimeout(this.setState({ shouldShowSvgMask: true }), 0)
   }
 
-  calculateNode = (node, stepPosition, cb, relativeCoords) => {
+  calculateNode = (node, step, cb) => {
     const { scrollDuration, inViewThreshold, scrollOffset } = this.props
-    const attrs = hx.getNodeRect(node)
+    const attrs = hx.getHighlightedRect(node, step)
     const w = Math.max(
       document.documentElement.clientWidth,
       window.innerWidth || 0
@@ -275,18 +264,23 @@ class Tour extends Component {
         duration: scrollDuration,
         offset,
         callback: nd => {
-          this.setState(
-            setNodeState(nd, this.helper.current, stepPosition, relativeCoords),
-            cb
-          )
+          this.setState(setNodeState(nd, step, this.helper.current), cb)
         },
       })
     } else {
-      this.setState(
-        setNodeState(node, this.helper.current, stepPosition, relativeCoords),
-        cb
-      )
+      this.setState(setNodeState(node, step, this.helper.current), cb)
     }
+  }
+
+  recalculateNode = step => {
+    const node = document.querySelector(step.selector)
+    const stepCallback = o => {
+      if (step.action && typeof step.action === 'function') {
+        this.unlockFocus(() => step.action(o))
+      }
+    }
+
+    this.calculateNode(node, step, () => stepCallback(node))
   }
 
   close() {
@@ -434,6 +428,7 @@ class Tour extends Component {
       rounded,
       accentColor,
       CustomHelper,
+      disableFocusLock,
       highlightedBorder,
       helperPadding,
       shouldShowStep,
@@ -461,6 +456,14 @@ class Tour extends Component {
       return (
         <Portal>
           <GlobalStyle />
+          <ReactourResizeObserver
+            step={steps[current]}
+            refresh={() => this.recalculateNode(steps[current])}
+          />
+          <ReactourMutationObserver
+            step={steps[current]}
+            refresh={() => this.recalculateNode(steps[current])}
+          />
           <SvgMask
             shouldShowStep={this.state.shouldShowSvgMask}
             onClick={this.maskClickHandler}
@@ -474,6 +477,7 @@ class Tour extends Component {
             maskSpace={maskSpace}
             padding={steps[current].padding}
             rounded={rounded}
+            roundedStep={steps[current].roundedStep}
             className={maskClassName}
             disableInteraction={
               steps[current].stepInteraction === false || disableInteraction
@@ -482,9 +486,8 @@ class Tour extends Component {
             }
             disableInteractionClassName={`${CN.mask.disableInteraction} ${highlightedMaskClassName}`}
             highlightedBorder={highlightedBorder}
-            roundedStep={steps[current].roundedStep}
           />
-          <FocusLock disabled={focusUnlocked}>
+          <FocusLock disabled={disableFocusLock}>
             <Guide
               shouldShowStep={shouldShowStep}
               shouldShowSvgMask={this.state.shouldShowSvgMask}
@@ -615,7 +618,12 @@ class Tour extends Component {
                     </Controls>
                   )}
 
-                  {showCloseButton ? <Close onClick={onRequestClose} /> : null}
+                  {showCloseButton ? (
+                    <Close
+                      onClick={onRequestClose}
+                      className="reactour__close"
+                    />
+                  ) : null}
                 </>
               )}
             </Guide>
@@ -628,7 +636,7 @@ class Tour extends Component {
   }
 }
 
-const setNodeState = (node, helper, position, relativeCoords) => {
+const setNodeState = (node, step, helper) => {
   const w = Math.max(
     document.documentElement.clientWidth,
     window.innerWidth || 0
@@ -642,27 +650,29 @@ const setNodeState = (node, helper, position, relativeCoords) => {
     ? hx.getNodeRect(helper)
     : { width: 0, height: 0 }
 
-  const attrs = node
-    ? hx.getNodeRect(node, relativeCoords)
-    : {
-        top: h + 10,
-        right: w / 2 + 9,
-        bottom: h / 2 + 9,
-        left: w / 2 - helperWidth / 2,
-        width: 0,
-        height: 0,
-        w,
-        h,
-        helperPosition: 'center',
-      }
+  let attrs = {
+    top: h + 10,
+    right: w / 2 + 9,
+    bottom: h / 2 + 9,
+    left: w / 2 - helperWidth / 2,
+    width: 0,
+    height: 0,
+    w,
+    h,
+    helperPosition: 'center',
+  }
+
+  if (node) {
+    attrs = hx.getHighlightedRect(node, step)
+  }
 
   return function update() {
     return {
       w,
       h,
-      helperWidth: helperWidth,
-      helperHeight: helperHeight,
-      helperPosition: position,
+      helperWidth,
+      helperHeight,
+      helperPosition: step.position,
       ...attrs,
       inDOM: !!node,
     }

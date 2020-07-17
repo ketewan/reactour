@@ -336,6 +336,10 @@ steps: PropTypes.arrayOf(PropTypes.shape({
   'style': PropTypes.object,
   'stepInteraction': PropTypes.bool,
   'navDotAriaLabel': PropTypes.string,
+  'observe': PropTypes.string,
+  'highlightedSelectors': PropTypes.array,
+  'mutationObservables': PropTypes.array,
+  'resizeObservables': PropTypes.array,
 })),
 ```
 
@@ -369,6 +373,23 @@ const steps = [
     stepInteraction: false,
     // Text read to screen reader software for this step's navigation dot
     navDotAriaLabel: 'Go to step 4',
+    // Observe direct children DOM mutations of this node
+    // If a child is added: the highlighted region is redrawn focused on it
+    // If a child is removed: the highlighted region is redrawn focused on the step selector node
+    observe: '[data-tour="observable-parent"]',
+    // Array of selectors, each selected node will be included (by union)
+    // in the highlighted region of the mask. You don't need to add the 
+    // step selector here as the default highlighted region is focused on it
+    highlightedSelectors: ['[data-tour="highlighted-element"]'],
+    // Array of selectors, each selected node DOM addition/removal will triggered a rerender
+    // of the mask shape. Useful in combinaison with highlightedSelectors when highlighted
+    // region of mask should be redrawn after a user action
+    mutationObservables: ['[data-tour="mutable-element"]'],
+    // Array of selectors, each selected node resize will triggered a rerender of the mask shape.
+    // Useful in combinaison with highlightedSelectors when highlighted region of mask should
+    // be redrawn after a user action. You should also add the selector in mutationObservables
+    // if you want to track DOM addition/removal too
+    resizeObservables: ['[data-tour="resizable-parent"]'],
   },
   // ...
 ]
@@ -387,6 +408,15 @@ Type: `string`
 Type: `number`
 
 Default: `1`
+
+#### disableFocusLock
+
+> Disable FocusLock component.
+
+Type: `bool`
+
+Default: `false`
+
 
 ## FAQ
 

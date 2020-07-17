@@ -1,6 +1,7 @@
 import PropTypes from 'prop-types'
 
 export const propTypes = {
+  disableFocusLock: PropTypes.bool,
   badgeContent: PropTypes.func,
   highlightedMaskClassName: PropTypes.string,
   highlightedBorder: PropTypes.shape({
@@ -53,6 +54,7 @@ export const propTypes = {
       roundedStep: PropTypes.boolean,
       documentRootSelector: PropTypes.string,
       pading: PropTypes.arrayOf(PropTypes.number),
+      roundedStep: PropTypes.bool,
     })
   ),
   update: PropTypes.string,
@@ -66,9 +68,14 @@ export const propTypes = {
   rounded: PropTypes.number,
   accentColor: PropTypes.string,
   shouldShowStep: PropTypes.bool,
+  highlightedBorder: PropTypes.shape({
+    color: PropTypes.string.isRequired,
+    width: PropTypes.number.isRequired,
+  }),
 }
 
 export const defaultProps = {
+  disableFocusLock: false,
   showNavigation: true,
   showNavigationNumber: true,
   showButtons: true,

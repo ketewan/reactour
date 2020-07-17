@@ -140,6 +140,7 @@ const tourConfig = [
     selector: '[data-tut="reactour__logo"]',
     content: 'And this is our cool bus...',
     position: [20, 20],
+    roundedStep: true,
   },
   {
     selector: '[data-tut="reactour__copy"]',
@@ -251,6 +252,14 @@ const tourConfig = [
       'And the Tour could be observing changes to update the view, try clicking the button…',
     observe: '[data-tut="reactour__state--observe"]',
     action: node => node.focus(),
+  },
+  {
+    selector: '[data-tut="reactour__highlighted"]',
+    content:
+      'Moreover you can highlight multiple elements and adjust highlighted region depending on DOM resizes and mutations. Try clicking the "?" tooltip and playing with tabs...',
+    highlightedSelectors: ['[data-tut="reactour__highlighted-absolute-child"]'],
+    mutationObservables: ['[data-tut="reactour__highlighted-absolute-child"]'],
+    resizeObservables: ['[data-tut="reactour__highlighted-absolute-child"]'],
   },
 ]
 
