@@ -31,7 +31,6 @@ export default function SvgMask({
   className,
   onClick,
   highlightedBorder,
-  roundedStep,
   shouldShowStep,
 } = props) {
   const paddingTop = padding ? padding[0] : maskSpace
@@ -47,143 +46,6 @@ export default function SvgMask({
   const roundedRadius = roundedStep ? Math.min(width / 2, height / 2) : rounded
 
   return (
-    <SvgMaskWrapper onClick={onClick} maskClassName={className}>
-      <svg
-        width={windowWidth}
-        height={windowHeight}
-        xmlns="http://www.w3.org/2000/svg"
-        className={className}
-      >
-        <defs>
-          <mask id="mask-main">
-            <rect
-              x={0}
-              y={0}
-              width={windowWidth}
-              height={windowHeight}
-              fill="white"
-            />
-            <rect x={left} y={top} width={width} height={height} fill="black" />
-            {/* top left rounded corner */}
-            <rect
-              x={left - 1}
-              y={top - 1}
-              width={roundedRadius}
-              height={roundedRadius}
-              fill="white"
-            />
-            <circle
-              cx={left + roundedRadius}
-              cy={top + roundedRadius}
-              r={roundedRadius}
-              fill="black"
-            />
-            {/* top right rounded corner */}
-            <rect
-              x={left + width - roundedRadius + 1}
-              y={top - 1}
-              width={roundedRadius}
-              height={roundedRadius}
-              fill="white"
-            />
-            <circle
-              cx={left + width - roundedRadius}
-              cy={top + roundedRadius}
-              r={roundedRadius}
-              fill="black"
-            />
-            {/* bottom left rounded corner */}
-            <rect
-              x={left - 1}
-              y={top + height - roundedRadius + 1}
-              width={roundedRadius}
-              height={roundedRadius}
-              fill="white"
-            />
-            <circle
-              cx={left + roundedRadius}
-              cy={top + height - roundedRadius}
-              r={roundedRadius}
-              fill="black"
-            />
-            {/* bottom right rounded corner */}
-            <rect
-              x={left + width - roundedRadius + 1}
-              y={top + height - roundedRadius + 1}
-              width={roundedRadius}
-              height={roundedRadius}
-              fill="white"
-            />
-            <circle
-              cx={left + width - roundedRadius}
-              cy={top + height - roundedRadius}
-              r={roundedRadius}
-              fill="black "
-            />
-          </mask>
-          <clipPath id="clip-path">
-            {/* top */}
-            <rect x={0} y={0} width={windowWidth} height={top} />
-            {/* left */}
-            <rect x={0} y={top} width={left} height={height} />
-            {/* right */}
-            <rect
-              x={targetLeft + targetWidth + padding}
-              y={top}
-              width={hx.safe(windowWidth - targetWidth - left)}
-              height={height}
-            />
-            {/* bottom */}
-            <rect
-              x={0}
-              y={targetTop + targetHeight + padding}
-              width={windowWidth}
-              height={hx.safe(windowHeight - targetHeight - top)}
-            />
-          </clipPath>
-        </defs>
-        <rect
-          x={0}
-          y={0}
-          width={windowWidth}
-          height={windowHeight}
-          fill="currentColor"
-          mask="url(#mask-main)"
-        />
-        <rect
-          x={0}
-          y={0}
-          width={windowWidth}
-          height={windowHeight}
-          fill="currentColor"
-          clipPath="url(#clip-path)"
-          pointerEvents="auto"
-        />
-        <rect
-          x={left}
-          y={top}
-          width={width}
-          height={height}
-          pointerEvents="auto"
-          fill="transparent"
-          display={disableInteraction ? 'block' : 'none'}
-          className={disableInteractionClassName}
-        />
-        {/* border */}
-        {highlightedBorder && (
-          <rect
-            x={hx.safe(left + highlightedBorder.width / 2.0)}
-            y={hx.safe(top + highlightedBorder.width / 2.0)}
-            width={hx.safe(width - highlightedBorder.width)}
-            height={hx.safe(height - highlightedBorder.width)}
-            pointerEvents="auto"
-            fill="none"
-            strokeWidth={highlightedBorder.width}
-            stroke={highlightedBorder.color}
-            rx={roundedRadius - 2}
-          />
-        )}
-      </svg>
     <SvgMaskWrapper maskClassName={className} onClick={onClick}>
       {shouldShowStep ? (
         <svg
@@ -228,56 +90,56 @@ export default function SvgMask({
               <rect
                 x={left - 1}
                 y={top - 1}
-                width={rounded}
-                height={rounded}
+                width={roundedRadius}
+                height={roundedRadius}
                 fill="white"
               />
               <circle
-                cx={left + rounded}
-                cy={top + rounded}
-                r={rounded}
+                cx={left + roundedRadius}
+                cy={top + roundedRadius}
+                r={roundedRadius}
                 fill="black"
               />
               {/* top right rounded corner */}
               <rect
-                x={left + width - rounded + 1}
+                x={left + width - roundedRadius + 1}
                 y={top - 1}
-                width={rounded}
-                height={rounded}
+                width={roundedRadius}
+                height={roundedRadius}
                 fill="white"
               />
               <circle
-                cx={left + width - rounded}
-                cy={top + rounded}
-                r={rounded}
+                cx={left + width - roundedRadius}
+                cy={top + roundedRadius}
+                r={roundedRadius}
                 fill="black"
               />
               {/* bottom left rounded corner */}
               <rect
                 x={left - 1}
-                y={top + height - rounded + 1}
-                width={rounded}
-                height={rounded}
+                y={top + height - roundedRadius + 1}
+                width={roundedRadius}
+                height={roundedRadius}
                 fill="white"
               />
               <circle
-                cx={left + rounded}
-                cy={top + height - rounded}
-                r={rounded}
+                cx={left + roundedRadius}
+                cy={top + height - roundedRadius}
+                r={roundedRadius}
                 fill="black"
               />
               {/* bottom right rounded corner */}
               <rect
-                x={left + width - rounded + 1}
-                y={top + height - rounded + 1}
-                width={rounded}
-                height={rounded}
+                x={left + width - roundedRadius + 1}
+                y={top + height - roundedRadius + 1}
+                width={roundedRadius}
+                height={roundedRadius}
                 fill="white"
               />
               <circle
-                cx={left + width - rounded}
-                cy={top + height - rounded}
-                r={rounded}
+                cx={left + width - roundedRadius}
+                cy={top + height - roundedRadius}
+                r={roundedRadius}
                 fill="black "
               />
             </mask>

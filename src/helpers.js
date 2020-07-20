@@ -20,15 +20,15 @@ export function getNodeRect(node, relativeCoords) {
   }
 }
 
-export function getHighlightedRect(node, step) {
+export function getHighlightedRect(node, step, rootDocument, relativeCoords) {
   if (!step.highlightedSelectors) {
-    return getNodeRect(node)
+    return getNodeRect(node, relativeCoords)
   }
 
-  let attrs = getNodeRect(node)
+  let attrs = getNodeRect(node, relativeCoords)
 
   for (const selector of step.highlightedSelectors) {
-    const element = document.querySelector(selector)
+    const element = rootDocument.querySelector(selector)
 
     if (
       !element ||
@@ -38,7 +38,7 @@ export function getHighlightedRect(node, step) {
       continue
     }
 
-    const rect = getNodeRect(element)
+    const rect = getNodeRect(element, relativeCoords)
 
     if (rect.top < attrs.top) {
       attrs.top = rect.top
@@ -74,8 +74,8 @@ export function inView({ top, right, bottom, left, w, h, threshold = 0 }) {
 
 export function isBody(node) {
   return (
-    node === document.querySelector('body') ||
-    node === document.querySelector('html')
+    node === rootDocument.querySelector('body') ||
+    node === rootDocument.querySelector('html')
   )
 }
 
@@ -116,4 +116,23 @@ export function getWindow() {
     window.innerHeight || 0
   )
   return { w, h }
+}
+
+export function getDocument(documentRootSelector) {
+  const root =
+    documentRootSelector && window.document.querySelector(documentRootSelector)
+
+  let document
+  const relativeCoords = { x: 0, y: 0 }
+
+  if (root) {
+    document = root.contentDocument || root.contentWindow.document
+    const { top, left } = getNodeRect(root)
+    relativeCoords.x = left
+    relativeCoords.y = top
+  } else {
+    document = window.document
+  }
+
+  return { document, relativeCoords }
 }
