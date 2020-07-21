@@ -72,7 +72,7 @@ export function inView({ top, right, bottom, left, w, h, threshold = 0 }) {
   )
 }
 
-export function isBody(node) {
+export function isBody(node, rootDocument = window.document) {
   return (
     node === rootDocument.querySelector('body') ||
     node === rootDocument.querySelector('html')

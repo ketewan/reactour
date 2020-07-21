@@ -54,6 +54,7 @@ export const propTypes = {
       documentRootSelector: PropTypes.string,
       padding: PropTypes.arrayOf(PropTypes.number),
       roundedStep: PropTypes.bool,
+      additionalSelectors: PropTypes.arrayOf(PropTypes.string),
     })
   ),
   update: PropTypes.string,

@@ -48,6 +48,7 @@ class Tour extends Component {
         height: 0,
       },
       shouldShowSvgMask: false,
+      additionalHoles: [],
     }
     this.helper = createRef()
     this.helperElement = null
@@ -254,6 +255,7 @@ class Tour extends Component {
       window.document.documentElement.clientHeight,
       window.innerHeight || 0
     )
+
     if (!hx.inView({ ...attrs, w, h, threshold: inViewThreshold })) {
       const parentScroll = Scrollparent(node)
       const offset = scrollOffset
@@ -478,6 +480,7 @@ class Tour extends Component {
       helperWidth,
       helperHeight,
       helperPosition,
+      additionalHoles,
     } = this.state
 
     if (isOpen) {
@@ -514,6 +517,7 @@ class Tour extends Component {
             }
             disableInteractionClassName={`${CN.mask.disableInteraction} ${highlightedMaskClassName}`}
             highlightedBorder={highlightedBorder}
+            additionalHoles={additionalHoles}
           />
           <FocusLock disabled={disableFocusLock}>
             <Guide
@@ -694,6 +698,24 @@ const setNodeState = (node, step, helper, rootDocument, relativeCoords) => {
     attrs = hx.getHighlightedRect(node, step, rootDocument, relativeCoords)
   }
 
+  const additionalHoles =
+    step.additionalSelectors &&
+    step.additionalSelectors.reduce((holes, selector) => {
+      const nodes = rootDocument.querySelectorAll(selector)
+      if (nodes) {
+        nodes.forEach(node => {
+          const coords = hx.getNodeRect(node, relativeCoords)
+          holes.push({
+            x: coords.left,
+            y: coords.top,
+            width: coords.width,
+            height: coords.height,
+          })
+        })
+      }
+      return holes
+    }, [])
+
   return function update() {
     return {
       w,
@@ -703,6 +725,7 @@ const setNodeState = (node, step, helper, rootDocument, relativeCoords) => {
       helperPosition: step.position,
       ...attrs,
       inDOM: !!node,
+      additionalHoles,
     }
   }
 }
