@@ -25,7 +25,8 @@ body {
   stroke: #38CCD7;
 }
 .mask {
-  color: transparent;
+  color: #021d1d;
+  opacity: 0.7
 }
 
 [data-tour-elem='controls'] {

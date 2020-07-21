@@ -1,6 +1,7 @@
 import PropTypes from 'prop-types'
 
 export const propTypes = {
+  disableFocusLock: PropTypes.bool,
   badgeContent: PropTypes.func,
   highlightedMaskClassName: PropTypes.string,
   highlightedBorder: PropTypes.shape({
@@ -50,9 +51,10 @@ export const propTypes = {
       style: PropTypes.object,
       stepInteraction: PropTypes.bool,
       navDotAriaLabel: PropTypes.string,
-      roundedStep: PropTypes.boolean,
       documentRootSelector: PropTypes.string,
-      pading: PropTypes.arrayOf(PropTypes.number),
+      padding: PropTypes.arrayOf(PropTypes.number),
+      roundedStep: PropTypes.bool,
+      additionalSelectors: PropTypes.arrayOf(PropTypes.string),
     })
   ),
   update: PropTypes.string,
@@ -69,6 +71,7 @@ export const propTypes = {
 }
 
 export const defaultProps = {
+  disableFocusLock: false,
   showNavigation: true,
   showNavigationNumber: true,
   showButtons: true,

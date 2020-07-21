@@ -14,6 +14,8 @@ import {
   Navigation,
   Dot,
   SvgMask,
+  ResizeObserver as ReactourResizeObserver,
+  MutationObserver as ReactourMutationObserver,
 } from './components/index'
 import Portal from './Portal'
 import * as hx from './helpers'
@@ -46,6 +48,7 @@ class Tour extends Component {
         height: 0,
       },
       shouldShowSvgMask: false,
+      additionalHoles: [],
     }
     this.helper = createRef()
     this.helperElement = null
@@ -59,7 +62,7 @@ class Tour extends Component {
     }
   }
 
-  componentWillReceiveProps(nextProps) {
+  UNSAFE_componentWillReceiveProps(nextProps) {
     const { isOpen, update, updateDelay, shouldShowStep } = this.props
 
     if (!isOpen && nextProps.isOpen) {
@@ -114,7 +117,7 @@ class Tour extends Component {
       () => {
         setTimeout(this.showStep, 1)
         this.helperElement = this.helper.current
-        if (this.helper.current) {
+        if (!this.props.disableFocusLock && this.helper.current) {
           this.helper.current.focus()
         }
         if (onAfterOpen) {
@@ -127,26 +130,6 @@ class Tour extends Component {
     window.addEventListener('keydown', this.keyDownHandler, false)
   }
 
-  getDocument(documentRootSelector) {
-    const root =
-      documentRootSelector &&
-      window.document.querySelector(documentRootSelector)
-
-    let document = null
-    const relativeCoords = { x: 0, y: 0 }
-
-    if (root) {
-      document = root.contentDocument || root.contentWindow.document
-      const { top, left } = hx.getNodeRect(root)
-      relativeCoords.x = left
-      relativeCoords.y = top
-    } else {
-      document = window.document
-    }
-
-    return { document, relativeCoords }
-  }
-
   unlockFocus = callback => {
     this.setState(
       {
@@ -157,9 +140,8 @@ class Tour extends Component {
   }
 
   showStep = () => {
-    if (!this.props.shouldShowStep) {
+    if (!this.helper || !this.helper.current || !this.props.shouldShowStep)
       return
-    }
 
     const { steps } = this.props
     const { current, focusUnlocked } = this.state
@@ -170,11 +152,13 @@ class Tour extends Component {
     }
     const step = steps[current]
 
-    const { document, relativeCoords } = this.getDocument(
+    const { document: rootDocument, relativeCoords } = hx.getDocument(
       step.documentRootSelector
     )
 
-    const node = step.selector ? document.querySelector(step.selector) : null
+    const node = step.selector
+      ? rootDocument.querySelector(step.selector)
+      : null
 
     const stepCallback = o => {
       if (step.action && typeof step.action === 'function') {
@@ -183,12 +167,8 @@ class Tour extends Component {
     }
 
     if (step.observe) {
-      const target = document.querySelector(step.observe)
-      const config = {
-        attributes: true,
-        childList: true,
-        characterData: true,
-      }
+      const target = rootDocument.querySelector(step.observe)
+      const config = { attributes: true, childList: true, characterData: true }
       this.setState(
         prevState => {
           if (prevState.observer) {
@@ -205,12 +185,7 @@ class Tour extends Component {
                 ) {
                   const cb = () => stepCallback(mutation.addedNodes[0])
                   setTimeout(
-                    () =>
-                      this.calculateNode(
-                        mutation.addedNodes[0],
-                        step.position,
-                        cb
-                      ),
+                    () => this.calculateNode(mutation.addedNodes[0], step, cb),
                     100
                   )
                 } else if (
@@ -218,7 +193,13 @@ class Tour extends Component {
                   mutation.removedNodes.length > 0
                 ) {
                   const cb = () => stepCallback(node)
-                  this.calculateNode(node, step.position, cb)
+                  this.calculateNode(
+                    node,
+                    step,
+                    cb,
+                    rootDocument,
+                    relativeCoords
+                  )
                 }
               })
             }),
@@ -237,10 +218,16 @@ class Tour extends Component {
 
     if (node) {
       const cb = () => stepCallback(node)
-      this.calculateNode(node, step.position, cb, relativeCoords)
+      this.calculateNode(node, step, cb, rootDocument, relativeCoords)
     } else {
       this.setState(
-        setNodeState(null, this.helper.current, step.position, relativeCoords),
+        setNodeState(
+          null,
+          step,
+          this.helper.current,
+          rootDocument,
+          relativeCoords
+        ),
         stepCallback
       )
 
@@ -249,20 +236,26 @@ class Tour extends Component {
           `Doesn't find a DOM node '${step.selector}'. Please check the 'steps' Tour prop Array at position ${current}.`
         )
     }
-    setTimeout(this.setState({ shouldShowSvgMask: true }), 0)
+    setTimeout(() => this.setState({ shouldShowSvgMask: true }), 0)
   }
 
-  calculateNode = (node, stepPosition, cb, relativeCoords) => {
+  calculateNode = (node, step, cb, rootDocument, relativeCoords) => {
     const { scrollDuration, inViewThreshold, scrollOffset } = this.props
-    const attrs = hx.getNodeRect(node)
+    const attrs = hx.getHighlightedRect(
+      node,
+      step,
+      rootDocument,
+      relativeCoords
+    )
     const w = Math.max(
-      document.documentElement.clientWidth,
+      window.document.documentElement.clientWidth,
       window.innerWidth || 0
     )
     const h = Math.max(
-      document.documentElement.clientHeight,
+      window.document.documentElement.clientHeight,
       window.innerHeight || 0
     )
+
     if (!hx.inView({ ...attrs, w, h, threshold: inViewThreshold })) {
       const parentScroll = Scrollparent(node)
       const offset = scrollOffset
@@ -271,22 +264,55 @@ class Tour extends Component {
         ? -25
         : -(h / 2) + attrs.height / 2
       scrollSmooth.to(node, {
+        // TODO fix scroll to work with rootDocument
         context: hx.isBody(parentScroll) ? window : parentScroll,
         duration: scrollDuration,
         offset,
         callback: nd => {
           this.setState(
-            setNodeState(nd, this.helper.current, stepPosition, relativeCoords),
+            setNodeState(
+              nd,
+              step,
+              this.helper.current,
+              rootDocument,
+              relativeCoords
+            ),
             cb
           )
         },
       })
     } else {
       this.setState(
-        setNodeState(node, this.helper.current, stepPosition, relativeCoords),
+        setNodeState(
+          node,
+          step,
+          this.helper.current,
+          rootDocument,
+          relativeCoords
+        ),
         cb
       )
     }
+  }
+
+  recalculateNode = step => {
+    const { document: rootDocument, relativeCoords } = hx.getDocument(
+      step.documentRootSelector
+    )
+    const node = rootDocument.querySelector(step.selector)
+    const stepCallback = o => {
+      if (step.action && typeof step.action === 'function') {
+        this.unlockFocus(() => step.action(o))
+      }
+    }
+
+    this.calculateNode(
+      node,
+      step,
+      () => stepCallback(node),
+      rootDocument,
+      relativeCoords
+    )
   }
 
   close() {
@@ -375,7 +401,6 @@ class Tour extends Component {
       nextStep,
       prevStep,
       disableKeyboardNavigation,
-      showCloseButton,
     } = this.props
     e.stopPropagation()
 
@@ -434,6 +459,7 @@ class Tour extends Component {
       rounded,
       accentColor,
       CustomHelper,
+      disableFocusLock,
       highlightedBorder,
       helperPadding,
       shouldShowStep,
@@ -454,13 +480,21 @@ class Tour extends Component {
       helperWidth,
       helperHeight,
       helperPosition,
-      focusUnlocked,
+      additionalHoles,
     } = this.state
 
     if (isOpen) {
       return (
         <Portal>
           <GlobalStyle />
+          <ReactourResizeObserver
+            step={steps[current]}
+            refresh={() => this.recalculateNode(steps[current])}
+          />
+          <ReactourMutationObserver
+            step={steps[current]}
+            refresh={() => this.recalculateNode(steps[current])}
+          />
           <SvgMask
             shouldShowStep={this.state.shouldShowSvgMask}
             onClick={this.maskClickHandler}
@@ -474,6 +508,7 @@ class Tour extends Component {
             maskSpace={maskSpace}
             padding={steps[current].padding}
             rounded={rounded}
+            roundedStep={steps[current].roundedStep}
             className={maskClassName}
             disableInteraction={
               steps[current].stepInteraction === false || disableInteraction
@@ -482,9 +517,9 @@ class Tour extends Component {
             }
             disableInteractionClassName={`${CN.mask.disableInteraction} ${highlightedMaskClassName}`}
             highlightedBorder={highlightedBorder}
-            roundedStep={steps[current].roundedStep}
+            additionalHoles={additionalHoles}
           />
-          <FocusLock disabled={focusUnlocked}>
+          <FocusLock disabled={disableFocusLock}>
             <Guide
               shouldShowStep={shouldShowStep}
               shouldShowSvgMask={this.state.shouldShowSvgMask}
@@ -615,7 +650,12 @@ class Tour extends Component {
                     </Controls>
                   )}
 
-                  {showCloseButton ? <Close onClick={onRequestClose} /> : null}
+                  {showCloseButton ? (
+                    <Close
+                      onClick={onRequestClose}
+                      className="reactour__close"
+                    />
+                  ) : null}
                 </>
               )}
             </Guide>
@@ -628,7 +668,7 @@ class Tour extends Component {
   }
 }
 
-const setNodeState = (node, helper, position, relativeCoords) => {
+const setNodeState = (node, step, helper, rootDocument, relativeCoords) => {
   const w = Math.max(
     document.documentElement.clientWidth,
     window.innerWidth || 0
@@ -642,29 +682,50 @@ const setNodeState = (node, helper, position, relativeCoords) => {
     ? hx.getNodeRect(helper)
     : { width: 0, height: 0 }
 
-  const attrs = node
-    ? hx.getNodeRect(node, relativeCoords)
-    : {
-        top: h + 10,
-        right: w / 2 + 9,
-        bottom: h / 2 + 9,
-        left: w / 2 - helperWidth / 2,
-        width: 0,
-        height: 0,
-        w,
-        h,
-        helperPosition: 'center',
+  let attrs = {
+    top: h + 10,
+    right: w / 2 + 9,
+    bottom: h / 2 + 9,
+    left: w / 2 - helperWidth / 2,
+    width: 0,
+    height: 0,
+    w,
+    h,
+    helperPosition: 'center',
+  }
+
+  if (node) {
+    attrs = hx.getHighlightedRect(node, step, rootDocument, relativeCoords)
+  }
+
+  const additionalHoles =
+    step.additionalSelectors &&
+    step.additionalSelectors.reduce((holes, selector) => {
+      const nodes = rootDocument.querySelectorAll(selector)
+      if (nodes) {
+        nodes.forEach(node => {
+          const coords = hx.getNodeRect(node, relativeCoords)
+          holes.push({
+            x: coords.left,
+            y: coords.top,
+            width: coords.width,
+            height: coords.height,
+          })
+        })
       }
+      return holes
+    }, [])
 
   return function update() {
     return {
       w,
       h,
-      helperWidth: helperWidth,
-      helperHeight: helperHeight,
-      helperPosition: position,
+      helperWidth,
+      helperHeight,
+      helperPosition: step.position,
       ...attrs,
       inDOM: !!node,
+      additionalHoles,
     }
   }
 }
