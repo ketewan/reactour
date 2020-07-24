@@ -78,16 +78,25 @@ const Guide = React.forwardRef((props, ref) => {
   const pos = helperPosition => {
     // in case position was stated in step
     if (Array.isArray(helperPosition)) {
-      const isOutX = hx.isOutsideX(helperPosition[0], windowWidth)
-      const isOutY = hx.isOutsideY(helperPosition[1], windowHeight)
+      let x = helperPosition[0], y = helperPosition[1];
+
+      // if helperPosition coords are negative, locate according to right bottom corner
+      if (helperPosition[0] < 0) {
+        x += windowWidth;
+      }
+      if (helperPosition[1] < 0) {
+        y += windowHeight;
+      }
+      const isOutX = hx.isOutsideX(x, windowWidth)
+      const isOutY = hx.isOutsideY(y, windowHeight)
       const warn = (axis, num) => {
         console.warn(`${axis}:${num} is outside window, falling back to center`)
       }
-      if (isOutX) warn('x', helperPosition[0])
-      if (isOutY) warn('y', helperPosition[1])
+      if (isOutX) warn('x', x)
+      if (isOutY) warn('y', y)
       return [
-        isOutX ? windowWidth / 2 - helperWidth / 2 : helperPosition[0],
-        isOutY ? windowHeight / 2 - helperHeight / 2 : helperPosition[1],
+        isOutX ? windowWidth / 2 - helperWidth / 2 : x,
+        isOutY ? windowHeight / 2 - helperHeight / 2 : y,
       ]
     }
 

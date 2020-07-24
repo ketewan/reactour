@@ -12,8 +12,9 @@ export default ({ step, refresh }) => {
           continue
         }
 
-        const found = step.mutationObservables.find(observable =>
-          node.matches(observable)
+        const found = step.mutationObservables.find(
+          observable =>
+            node.matches(observable) || node.querySelector(observable)
         )
 
         if (found) {
