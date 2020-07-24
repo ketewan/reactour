@@ -110,6 +110,7 @@ export default function SvgMask({
                 {additionalHoles &&
                   additionalHoles.map(selector => (
                     <rect
+                      key={`additional-${selector.x}-${selector.y}`}
                       x={selector.x}
                       y={selector.y}
                       width={selector.width}
@@ -221,6 +222,7 @@ export default function SvgMask({
             {additionalHoles &&
               additionalHoles.map(selector => (
                 <rect
+                  key={`additional-${selector.x}-${selector.y}`}
                   x={hx.safe(selector.x + highlightedBorder.width / 2.0)}
                   y={hx.safe(selector.y + highlightedBorder.width / 2.0)}
                   width={hx.safe(selector.width - highlightedBorder.width)}
