@@ -691,7 +691,7 @@ const setNodeState = (node, step, helper, rootDocument, relativeCoords) => {
     height: 0,
     w,
     h,
-    helperPosition: 'center',
+    helperPosition: step.position || 'center',
   }
 
   if (node) {
