@@ -1,4 +1,5 @@
 import { useEffect, useState } from 'react'
+import { ResizeObserver } from '@juggle/resize-observer'
 
 export default ({ step, refresh }) => {
   const [mutationsCounter, setMutationsCounter] = useState(0)

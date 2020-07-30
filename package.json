@@ -49,6 +49,7 @@
     "@babel/polyfill": "7.6.0",
     "@babel/preset-env": "7.6.3",
     "@babel/preset-react": "7.6.3",
+    "@juggle/resize-observer": "^3.2.0",
     "babel-eslint": "10.0.3",
     "babel-loader": "8.0.6",
     "body-scroll-lock": "2.6.4",
