@@ -12,10 +12,16 @@ export default ({ step, refresh }) => {
           continue
         }
 
-        const found = step.mutationObservables.find(
-          observable =>
-            node.matches(observable) || node.querySelector(observable)
-        )
+        const found = step.mutationObservables.find(observable => {
+          if (Element.prototype.matches) {
+            return node.matches(observable) || node.querySelector(observable)
+          } else {
+            return (
+              node.msMatchesSelector(observable) ||
+              node.querySelector(observable)
+            )
+          }
+        })
 
         if (found) {
           refresh()

@@ -17,9 +17,13 @@ export default ({ step, refresh }) => {
           continue
         }
 
-        const found = step.resizeObservables.find(observable =>
-          node.matches(observable)
-        )
+        const found = step.resizeObservables.find(observable => {
+          if (Element.prototype.matches) {
+            return node.matches(observable)
+          } else {
+            return node.msMatchesSelector(observable)
+          }
+        })
 
         if (found) {
           setMutationsCounter(mutationsCounter + 1)
