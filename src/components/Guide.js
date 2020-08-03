@@ -22,7 +22,7 @@ const GuideBody = styled.div`
   transition: transform 0.3s;
   top: 0;
   left: 0;
-  z-index: 1000000;
+  z-index: 1270;
   transform: ${props => `translate(${props.left}px, ${props.top}px)`};
   ${props => !props.helperPosition && props.arrow};
 `
