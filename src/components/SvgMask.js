@@ -11,7 +11,7 @@ const SvgMaskWrapper = styled.div`
   top: 0;
   height: 100%;
   position: fixed;
-  z-index: 1250;
+  z-index: 1350;
   pointer-events: none;
 `
 
